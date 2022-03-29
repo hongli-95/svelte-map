@@ -2460,40 +2460,6 @@ var app = (function () {
       };
     }
 
-    function azimuthalRaw(scale) {
-      return function(x, y) {
-        var cx = cos(x),
-            cy = cos(y),
-            k = scale(cx * cy);
-            if (k === Infinity) return [2, 0];
-        return [
-          k * cy * sin(x),
-          k * sin(y)
-        ];
-      }
-    }
-
-    function azimuthalInvert(angle) {
-      return function(x, y) {
-        var z = sqrt(x * x + y * y),
-            c = angle(z),
-            sc = sin(c),
-            cc = cos(c);
-        return [
-          atan2(x * sc, z * cc),
-          asin(z && y * sc / z)
-        ];
-      }
-    }
-
-    var azimuthalEqualAreaRaw = azimuthalRaw(function(cxcy) {
-      return sqrt(2 / (1 + cxcy));
-    });
-
-    azimuthalEqualAreaRaw.invert = azimuthalInvert(function(z) {
-      return 2 * asin(z / 2);
-    });
-
     function naturalEarth1Raw(lambda, phi) {
       var phi2 = phi * phi, phi4 = phi2 * phi2;
       return [
@@ -2587,7 +2553,7 @@ var app = (function () {
     			path_1 = svg_element("path");
     			attr_dev(path_1, "class", "feature-path svelte-2l6mg8");
     			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[1](/*data*/ ctx[8]));
-    			add_location(path_1, file$1, 30, 1, 799);
+    			add_location(path_1, file$1, 30, 1, 773);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -2623,7 +2589,7 @@ var app = (function () {
     					path_1,
     					draw,
     					{
-    						duration: 3000,
+    						duration: 2000,
     						delay: 0,
     						easing: quadInOut
     					},
@@ -2640,7 +2606,7 @@ var app = (function () {
     				path_1,
     				draw,
     				{
-    					duration: 3000,
+    					duration: 2000,
     					delay: 0,
     					easing: quadInOut
     				},
@@ -2801,7 +2767,6 @@ var app = (function () {
     	$$self.$capture_state = () => ({
     		geoPath,
     		geoNaturalEarth1,
-    		geoAzimuthalEqualAreaRaw: azimuthalEqualAreaRaw,
     		createEventDispatcher,
     		raise,
     		draw,
@@ -2871,6 +2836,7 @@ var app = (function () {
     			svg = svg_element("svg");
     			create_component(marks.$$.fragment);
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[1] + " " + /*height*/ ctx[2]);
+    			attr_dev(svg, "preserveAspectRatio", "xMidYMid meet");
     			add_location(svg, file, 16, 1, 331);
     			attr_dev(main, "class", "svelte-161625f");
     			add_location(main, file, 15, 0, 323);
