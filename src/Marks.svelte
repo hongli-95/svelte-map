@@ -1,5 +1,5 @@
 <script>
-	import { geoPath, geoNaturalEarth1, geoAzimuthalEqualAreaRaw } from 'd3';
+	import { geoPath, geoNaturalEarth1 } from 'd3';
 	import { createEventDispatcher } from 'svelte';
 	import { raise } from 'layercake';
 	import { draw } from 'svelte/transition';
@@ -30,7 +30,7 @@
 {#each dataset as data}
 	<path
 		class="feature-path"
-		transition:draw={{ duration: 3000, delay: 0, easing: quadInOut }}
+		transition:draw={{ duration: 2000, delay: 0, easing: quadInOut }}
 		d={path(data)}
 		on:mousemove={handleMousemove(data)}
 	/>

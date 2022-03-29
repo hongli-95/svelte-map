@@ -14,7 +14,7 @@
 </script>
 
 <main>
-	<svg viewBox="0 0 {width} {height}">
+	<svg viewBox="0 0 {width} {height}" preserveAspectRatio="xMidYMid meet">
 		<Marks {dataset} />
 	</svg>
 </main>
