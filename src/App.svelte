@@ -3,18 +3,24 @@
 	import Marks from './Marks.svelte';
 
 	let dataset = [];
+	let nameList = [];
+
 	json(
 		'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
 	).then((data) => {
+		//data has all the information of countries: names, id, geomatrical data, etc.
+		//then save all that into an array named "dataset"
+		console.log(data)
 		dataset = data.features;
 	});
 
 	const width = window.innerWidth;
 	const height = window.innerHeight;
+
 </script>
 
 <main>
-	<svg viewBox="0 0 {width} {height}" preserveAspectRatio="xMidYMid meet">
+	<svg viewBox="0 0 {width} {height}">
 		<Marks {dataset} />
 	</svg>
 </main>

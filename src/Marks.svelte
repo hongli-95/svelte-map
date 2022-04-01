@@ -1,4 +1,8 @@
 <script>
+	//This file handles the map drawing part. 
+	//called from the app.svelte, passed in the dataset array, and draw each country
+	//if other data is wanted other than just the map, such as countries names, it might be handled here as well.
+
 	import { geoPath, geoNaturalEarth1 } from 'd3';
 	import { createEventDispatcher } from 'svelte';
 	import { raise } from 'layercake';
@@ -15,18 +19,24 @@
 
 	const path = geoPath(projection);
 
+	//svelte event dispatcher
 	const dispatch = createEventDispatcher();
 
 	function handleMousemove(feature) {
 		return function handleMousemoveFn(e) {
+			//raise: Layercake component(?) Used to handle borders of neighboring countries
 			raise(this);
 			if (e.layerX !== 0 && e.layerY !== 0) {
-				dispatch('mousemove', {e, props: feature.properties })
+
+				//could be named however 
+				//props function unknown, seems to be used to access what is being passed in here from other svelte file
+				dispatch('eventname', {e, props: feature.properties.name })
 			}
 		}
 	}
 </script>
 
+<!-- draw each country based on the set dataset from App.svelte -->
 {#each dataset as data}
 	<path
 		class="feature-path"
