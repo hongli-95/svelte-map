@@ -3,15 +3,19 @@
 	import Marks from './Marks.svelte';
 
 	let dataset = [];
-	let nameList = [];
+	//let idList = [];
 
 	json(
 		'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
 	).then((data) => {
 		//data has all the information of countries: names, id, geomatrical data, etc.
 		//then save all that into an array named "dataset"
-		console.log(data)
 		dataset = data.features;
+
+		// for (let i = 0; i < dataset.length; i++) {
+		// 	idList.push(dataset[i].id)
+		// }
+		// console.log(idList);
 	});
 
 	const width = window.innerWidth;
