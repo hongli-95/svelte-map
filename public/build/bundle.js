@@ -4,7 +4,7 @@ var app = (function () {
     'use strict';
 
     function noop$1() { }
-    const identity$1 = x => x;
+    const identity$3 = x => x;
     function add_location(element, file, line, column, char) {
         element.__svelte_meta = {
             loc: { file, line, column, char }
@@ -100,12 +100,6 @@ var app = (function () {
     }
     function svg_element(name) {
         return document.createElementNS('http://www.w3.org/2000/svg', name);
-    }
-    function text(data) {
-        return document.createTextNode(data);
-    }
-    function empty() {
-        return text('');
     }
     function listen(node, event, handler, options) {
         node.addEventListener(event, handler, options);
@@ -373,7 +367,7 @@ var app = (function () {
             };
         }
         function go(b) {
-            const { delay = 0, duration = 300, easing = identity$1, tick = noop$1, css } = config || null_transition;
+            const { delay = 0, duration = 300, easing = identity$3, tick = noop$1, css } = config || null_transition;
             const program = {
                 start: now() + delay,
                 b
@@ -454,9 +448,12 @@ var app = (function () {
             }
         };
     }
-    function create_component(block) {
-        block && block.c();
-    }
+
+    const globals = (typeof window !== 'undefined'
+        ? window
+        : typeof globalThis !== 'undefined'
+            ? globalThis
+            : global);
     function mount_component(component, target, anchor, customElement) {
         const { fragment, on_mount, on_destroy, after_update } = component.$$;
         fragment && fragment.m(target, anchor);
@@ -654,6 +651,92 @@ var app = (function () {
         $inject_state() { }
     }
 
+    function ascending(a, b) {
+      return a == null || b == null ? NaN : a < b ? -1 : a > b ? 1 : a >= b ? 0 : NaN;
+    }
+
+    function bisector(f) {
+      let delta = f;
+      let compare1 = f;
+      let compare2 = f;
+
+      if (f.length !== 2) {
+        delta = (d, x) => f(d) - x;
+        compare1 = ascending;
+        compare2 = (d, x) => ascending(f(d), x);
+      }
+
+      function left(a, x, lo = 0, hi = a.length) {
+        if (lo < hi) {
+          if (compare1(x, x) !== 0) return hi;
+          do {
+            const mid = (lo + hi) >>> 1;
+            if (compare2(a[mid], x) < 0) lo = mid + 1;
+            else hi = mid;
+          } while (lo < hi);
+        }
+        return lo;
+      }
+
+      function right(a, x, lo = 0, hi = a.length) {
+        if (lo < hi) {
+          if (compare1(x, x) !== 0) return hi;
+          do {
+            const mid = (lo + hi) >>> 1;
+            if (compare2(a[mid], x) <= 0) lo = mid + 1;
+            else hi = mid;
+          } while (lo < hi);
+        }
+        return lo;
+      }
+
+      function center(a, x, lo = 0, hi = a.length) {
+        const i = left(a, x, lo, hi - 1);
+        return i > lo && delta(a[i - 1], x) > -delta(a[i], x) ? i - 1 : i;
+      }
+
+      return {left, center, right};
+    }
+
+    function number$1(x) {
+      return x === null ? NaN : +x;
+    }
+
+    const ascendingBisect = bisector(ascending);
+    const bisectRight = ascendingBisect.right;
+    bisector(number$1).center;
+    var bisect = bisectRight;
+
+    function extent(values, valueof) {
+      let min;
+      let max;
+      if (valueof === undefined) {
+        for (const value of values) {
+          if (value != null) {
+            if (min === undefined) {
+              if (value >= value) min = max = value;
+            } else {
+              if (min > value) min = value;
+              if (max < value) max = value;
+            }
+          }
+        }
+      } else {
+        let index = -1;
+        for (let value of values) {
+          if ((value = valueof(value, ++index, values)) != null) {
+            if (min === undefined) {
+              if (value >= value) min = max = value;
+            } else {
+              if (min > value) min = value;
+              if (max < value) max = value;
+            }
+          }
+        }
+      }
+      return [min, max];
+    }
+
     // https://github.com/python/cpython/blob/a74eea238f5baba15797e2e8b570d153bc8690a7/Modules/mathmodule.c#L1423
     class Adder {
       constructor() {
@@ -694,6 +777,61 @@ var app = (function () {
         }
         return hi;
       }
+    }
+
+    var e10 = Math.sqrt(50),
+        e5 = Math.sqrt(10),
+        e2 = Math.sqrt(2);
+
+    function ticks(start, stop, count) {
+      var reverse,
+          i = -1,
+          n,
+          ticks,
+          step;
+
+      stop = +stop, start = +start, count = +count;
+      if (start === stop && count > 0) return [start];
+      if (reverse = stop < start) n = start, start = stop, stop = n;
+      if ((step = tickIncrement(start, stop, count)) === 0 || !isFinite(step)) return [];
+
+      if (step > 0) {
+        let r0 = Math.round(start / step), r1 = Math.round(stop / step);
+        if (r0 * step < start) ++r0;
+        if (r1 * step > stop) --r1;
+        ticks = new Array(n = r1 - r0 + 1);
+        while (++i < n) ticks[i] = (r0 + i) * step;
+      } else {
+        step = -step;
+        let r0 = Math.round(start * step), r1 = Math.round(stop * step);
+        if (r0 / step < start) ++r0;
+        if (r1 / step > stop) --r1;
+        ticks = new Array(n = r1 - r0 + 1);
+        while (++i < n) ticks[i] = (r0 + i) / step;
+      }
+
+      if (reverse) ticks.reverse();
+
+      return ticks;
+    }
+
+    function tickIncrement(start, stop, count) {
+      var step = (stop - start) / Math.max(0, count),
+          power = Math.floor(Math.log(step) / Math.LN10),
+          error = step / Math.pow(10, power);
+      return power >= 0
+          ? (error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1) * Math.pow(10, power)
+          : -Math.pow(10, -power) / (error >= e10 ? 10 : error >= e5 ? 5 : error >= e2 ? 2 : 1);
+    }
+
+    function tickStep(start, stop, count) {
+      var step0 = Math.abs(stop - start) / Math.max(0, count),
+          step1 = Math.pow(10, Math.floor(Math.log(step0) / Math.LN10)),
+          error = step0 / step1;
+      if (error >= e10) step1 *= 10;
+      else if (error >= e5) step1 *= 5;
+      else if (error >= e2) step1 *= 2;
+      return stop < start ? -step1 : step1;
     }
 
     function* flatten(arrays) {
@@ -1087,6 +1225,201 @@ var app = (function () {
           : m1) * 255;
     }
 
+    var constant = x => () => x;
+
+    function linear$1(a, d) {
+      return function(t) {
+        return a + t * d;
+      };
+    }
+
+    function exponential(a, b, y) {
+      return a = Math.pow(a, y), b = Math.pow(b, y) - a, y = 1 / y, function(t) {
+        return Math.pow(a + t * b, y);
+      };
+    }
+
+    function gamma(y) {
+      return (y = +y) === 1 ? nogamma : function(a, b) {
+        return b - a ? exponential(a, b, y) : constant(isNaN(a) ? b : a);
+      };
+    }
+
+    function nogamma(a, b) {
+      var d = b - a;
+      return d ? linear$1(a, d) : constant(isNaN(a) ? b : a);
+    }
+
+    var interpolateRgb = (function rgbGamma(y) {
+      var color = gamma(y);
+
+      function rgb$1(start, end) {
+        var r = color((start = rgb(start)).r, (end = rgb(end)).r),
+            g = color(start.g, end.g),
+            b = color(start.b, end.b),
+            opacity = nogamma(start.opacity, end.opacity);
+        return function(t) {
+          start.r = r(t);
+          start.g = g(t);
+          start.b = b(t);
+          start.opacity = opacity(t);
+          return start + "";
+        };
+      }
+
+      rgb$1.gamma = rgbGamma;
+
+      return rgb$1;
+    })(1);
+
+    function numberArray(a, b) {
+      if (!b) b = [];
+      var n = a ? Math.min(b.length, a.length) : 0,
+          c = b.slice(),
+          i;
+      return function(t) {
+        for (i = 0; i < n; ++i) c[i] = a[i] * (1 - t) + b[i] * t;
+        return c;
+      };
+    }
+
+    function isNumberArray(x) {
+      return ArrayBuffer.isView(x) && !(x instanceof DataView);
+    }
+
+    function genericArray(a, b) {
+      var nb = b ? b.length : 0,
+          na = a ? Math.min(nb, a.length) : 0,
+          x = new Array(na),
+          c = new Array(nb),
+          i;
+
+      for (i = 0; i < na; ++i) x[i] = interpolate(a[i], b[i]);
+      for (; i < nb; ++i) c[i] = b[i];
+
+      return function(t) {
+        for (i = 0; i < na; ++i) c[i] = x[i](t);
+        return c;
+      };
+    }
+
+    function date(a, b) {
+      var d = new Date;
+      return a = +a, b = +b, function(t) {
+        return d.setTime(a * (1 - t) + b * t), d;
+      };
+    }
+
+    function interpolateNumber(a, b) {
+      return a = +a, b = +b, function(t) {
+        return a * (1 - t) + b * t;
+      };
+    }
+
+    function object(a, b) {
+      var i = {},
+          c = {},
+          k;
+
+      if (a === null || typeof a !== "object") a = {};
+      if (b === null || typeof b !== "object") b = {};
+
+      for (k in b) {
+        if (k in a) {
+          i[k] = interpolate(a[k], b[k]);
+        } else {
+          c[k] = b[k];
+        }
+      }
+
+      return function(t) {
+        for (k in i) c[k] = i[k](t);
+        return c;
+      };
+    }
+
+    var reA = /[-+]?(?:\d+\.?\d*|\.?\d+)(?:[eE][-+]?\d+)?/g,
+        reB = new RegExp(reA.source, "g");
+
+    function zero(b) {
+      return function() {
+        return b;
+      };
+    }
+
+    function one(b) {
+      return function(t) {
+        return b(t) + "";
+      };
+    }
+
+    function interpolateString(a, b) {
+      var bi = reA.lastIndex = reB.lastIndex = 0, // scan index for next number in b
+          am, // current match in a
+          bm, // current match in b
+          bs, // string preceding current number in b, if any
+          i = -1, // index in s
+          s = [], // string constants and placeholders
+          q = []; // number interpolators
+
+      // Coerce inputs to strings.
+      a = a + "", b = b + "";
+
+      // Interpolate pairs of numbers in a & b.
+      while ((am = reA.exec(a))
+          && (bm = reB.exec(b))) {
+        if ((bs = bm.index) > bi) { // a string precedes the next number in b
+          bs = b.slice(bi, bs);
+          if (s[i]) s[i] += bs; // coalesce with previous string
+          else s[++i] = bs;
+        }
+        if ((am = am[0]) === (bm = bm[0])) { // numbers in a & b match
+          if (s[i]) s[i] += bm; // coalesce with previous string
+          else s[++i] = bm;
+        } else { // interpolate non-matching numbers
+          s[++i] = null;
+          q.push({i: i, x: interpolateNumber(am, bm)});
+        }
+        bi = reB.lastIndex;
+      }
+
+      // Add remains of b.
+      if (bi < b.length) {
+        bs = b.slice(bi);
+        if (s[i]) s[i] += bs; // coalesce with previous string
+        else s[++i] = bs;
+      }
+
+      // Special optimization for only a single match.
+      // Otherwise, interpolate each of the numbers and rejoin the string.
+      return s.length < 2 ? (q[0]
+          ? one(q[0].x)
+          : zero(b))
+          : (b = q.length, function(t) {
+              for (var i = 0, o; i < b; ++i) s[(o = q[i]).i] = o.x(t);
+              return s.join("");
+            });
+    }
+
+    function interpolate(a, b) {
+      var t = typeof b, c;
+      return b == null || t === "boolean" ? constant(b)
+          : (t === "number" ? interpolateNumber
+          : t === "string" ? ((c = color(b)) ? (b = c, interpolateRgb) : interpolateString)
+          : b instanceof color ? interpolateRgb
+          : b instanceof Date ? date
+          : isNumberArray(b) ? numberArray
+          : Array.isArray(b) ? genericArray
+          : typeof b.valueOf !== "function" && typeof b.toString !== "function" || isNaN(b) ? object
+          : interpolateNumber)(a, b);
+    }
+
+    function interpolateRound(a, b) {
+      return a = +a, b = +b, function(t) {
+        return Math.round(a * (1 - t) + b * t);
+      };
+    }
+
     function responseJson(response) {
       if (!response.ok) throw new Error(response.status + " " + response.statusText);
       if (response.status === 204 || response.status === 205) return;
@@ -1095,6 +1428,333 @@ var app = (function () {
 
     function json(input, init) {
       return fetch(input, init).then(responseJson);
+    }
+
+    function formatDecimal(x) {
+      return Math.abs(x = Math.round(x)) >= 1e21
+          ? x.toLocaleString("en").replace(/,/g, "")
+          : x.toString(10);
+    }
+
+    // Computes the decimal coefficient and exponent of the specified number x with
+    // significant digits p, where x is positive and p is in [1, 21] or undefined.
+    // For example, formatDecimalParts(1.23) returns ["123", 0].
+    function formatDecimalParts(x, p) {
+      if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
+      var i, coefficient = x.slice(0, i);
+
+      // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
+      // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
+      return [
+        coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient,
+        +x.slice(i + 1)
+      ];
+    }
+
+    function exponent(x) {
+      return x = formatDecimalParts(Math.abs(x)), x ? x[1] : NaN;
+    }
+
+    function formatGroup(grouping, thousands) {
+      return function(value, width) {
+        var i = value.length,
+            t = [],
+            j = 0,
+            g = grouping[0],
+            length = 0;
+
+        while (i > 0 && g > 0) {
+          if (length + g + 1 > width) g = Math.max(1, width - length);
+          t.push(value.substring(i -= g, i + g));
+          if ((length += g + 1) > width) break;
+          g = grouping[j = (j + 1) % grouping.length];
+        }
+
+        return t.reverse().join(thousands);
+      };
+    }
+
+    function formatNumerals(numerals) {
+      return function(value) {
+        return value.replace(/[0-9]/g, function(i) {
+          return numerals[+i];
+        });
+      };
+    }
+
+    // [[fill]align][sign][symbol][0][width][,][.precision][~][type]
+    var re = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
+
+    function formatSpecifier(specifier) {
+      if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
+      var match;
+      return new FormatSpecifier({
+        fill: match[1],
+        align: match[2],
+        sign: match[3],
+        symbol: match[4],
+        zero: match[5],
+        width: match[6],
+        comma: match[7],
+        precision: match[8] && match[8].slice(1),
+        trim: match[9],
+        type: match[10]
+      });
+    }
+
+    formatSpecifier.prototype = FormatSpecifier.prototype; // instanceof
+
+    function FormatSpecifier(specifier) {
+      this.fill = specifier.fill === undefined ? " " : specifier.fill + "";
+      this.align = specifier.align === undefined ? ">" : specifier.align + "";
+      this.sign = specifier.sign === undefined ? "-" : specifier.sign + "";
+      this.symbol = specifier.symbol === undefined ? "" : specifier.symbol + "";
+      this.zero = !!specifier.zero;
+      this.width = specifier.width === undefined ? undefined : +specifier.width;
+      this.comma = !!specifier.comma;
+      this.precision = specifier.precision === undefined ? undefined : +specifier.precision;
+      this.trim = !!specifier.trim;
+      this.type = specifier.type === undefined ? "" : specifier.type + "";
+    }
+
+    FormatSpecifier.prototype.toString = function() {
+      return this.fill
+          + this.align
+          + this.sign
+          + this.symbol
+          + (this.zero ? "0" : "")
+          + (this.width === undefined ? "" : Math.max(1, this.width | 0))
+          + (this.comma ? "," : "")
+          + (this.precision === undefined ? "" : "." + Math.max(0, this.precision | 0))
+          + (this.trim ? "~" : "")
+          + this.type;
+    };
+
+    // Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
+    function formatTrim(s) {
+      out: for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
+        switch (s[i]) {
+          case ".": i0 = i1 = i; break;
+          case "0": if (i0 === 0) i0 = i; i1 = i; break;
+          default: if (!+s[i]) break out; if (i0 > 0) i0 = 0; break;
+        }
+      }
+      return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
+    }
+
+    var prefixExponent;
+
+    function formatPrefixAuto(x, p) {
+      var d = formatDecimalParts(x, p);
+      if (!d) return x + "";
+      var coefficient = d[0],
+          exponent = d[1],
+          i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
+          n = coefficient.length;
+      return i === n ? coefficient
+          : i > n ? coefficient + new Array(i - n + 1).join("0")
+          : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
+          : "0." + new Array(1 - i).join("0") + formatDecimalParts(x, Math.max(0, p + i - 1))[0]; // less than 1y!
+    }
+
+    function formatRounded(x, p) {
+      var d = formatDecimalParts(x, p);
+      if (!d) return x + "";
+      var coefficient = d[0],
+          exponent = d[1];
+      return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
+          : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
+          : coefficient + new Array(exponent - coefficient.length + 2).join("0");
+    }
+
+    var formatTypes = {
+      "%": (x, p) => (x * 100).toFixed(p),
+      "b": (x) => Math.round(x).toString(2),
+      "c": (x) => x + "",
+      "d": formatDecimal,
+      "e": (x, p) => x.toExponential(p),
+      "f": (x, p) => x.toFixed(p),
+      "g": (x, p) => x.toPrecision(p),
+      "o": (x) => Math.round(x).toString(8),
+      "p": (x, p) => formatRounded(x * 100, p),
+      "r": formatRounded,
+      "s": formatPrefixAuto,
+      "X": (x) => Math.round(x).toString(16).toUpperCase(),
+      "x": (x) => Math.round(x).toString(16)
+    };
+
+    function identity$2(x) {
+      return x;
+    }
+
+    var map = Array.prototype.map,
+        prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
+
+    function formatLocale(locale) {
+      var group = locale.grouping === undefined || locale.thousands === undefined ? identity$2 : formatGroup(map.call(locale.grouping, Number), locale.thousands + ""),
+          currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
+          currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
+          decimal = locale.decimal === undefined ? "." : locale.decimal + "",
+          numerals = locale.numerals === undefined ? identity$2 : formatNumerals(map.call(locale.numerals, String)),
+          percent = locale.percent === undefined ? "%" : locale.percent + "",
+          minus = locale.minus === undefined ? "−" : locale.minus + "",
+          nan = locale.nan === undefined ? "NaN" : locale.nan + "";
+
+      function newFormat(specifier) {
+        specifier = formatSpecifier(specifier);
+
+        var fill = specifier.fill,
+            align = specifier.align,
+            sign = specifier.sign,
+            symbol = specifier.symbol,
+            zero = specifier.zero,
+            width = specifier.width,
+            comma = specifier.comma,
+            precision = specifier.precision,
+            trim = specifier.trim,
+            type = specifier.type;
+
+        // The "n" type is an alias for ",g".
+        if (type === "n") comma = true, type = "g";
+
+        // The "" type, and any invalid type, is an alias for ".12~g".
+        else if (!formatTypes[type]) precision === undefined && (precision = 12), trim = true, type = "g";
+
+        // If zero fill is specified, padding goes after sign and before digits.
+        if (zero || (fill === "0" && align === "=")) zero = true, fill = "0", align = "=";
+
+        // Compute the prefix and suffix.
+        // For SI-prefix, the suffix is lazily computed.
+        var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
+            suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
+
+        // What format function should we use?
+        // Is this an integer type?
+        // Can this type generate exponential notation?
+        var formatType = formatTypes[type],
+            maybeSuffix = /[defgprs%]/.test(type);
+
+        // Set the default precision if not specified,
+        // or clamp the specified precision to the supported range.
+        // For significant precision, it must be in [1, 21].
+        // For fixed precision, it must be in [0, 20].
+        precision = precision === undefined ? 6
+            : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision))
+            : Math.max(0, Math.min(20, precision));
+
+        function format(value) {
+          var valuePrefix = prefix,
+              valueSuffix = suffix,
+              i, n, c;
+
+          if (type === "c") {
+            valueSuffix = formatType(value) + valueSuffix;
+            value = "";
+          } else {
+            value = +value;
+
+            // Determine the sign. -0 is not less than 0, but 1 / -0 is!
+            var valueNegative = value < 0 || 1 / value < 0;
+
+            // Perform the initial formatting.
+            value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
+
+            // Trim insignificant zeros.
+            if (trim) value = formatTrim(value);
+
+            // If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
+            if (valueNegative && +value === 0 && sign !== "+") valueNegative = false;
+
+            // Compute the prefix and suffix.
+            valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
+            valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
+
+            // Break the formatted value into the integer “value” part that can be
+            // grouped, and fractional or exponential “suffix” part that is not.
+            if (maybeSuffix) {
+              i = -1, n = value.length;
+              while (++i < n) {
+                if (c = value.charCodeAt(i), 48 > c || c > 57) {
+                  valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
+                  value = value.slice(0, i);
+                  break;
+                }
+              }
+            }
+          }
+
+          // If the fill character is not "0", grouping is applied before padding.
+          if (comma && !zero) value = group(value, Infinity);
+
+          // Compute the padding.
+          var length = valuePrefix.length + value.length + valueSuffix.length,
+              padding = length < width ? new Array(width - length + 1).join(fill) : "";
+
+          // If the fill character is "0", grouping is applied after padding.
+          if (comma && zero) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
+
+          // Reconstruct the final output based on the desired alignment.
+          switch (align) {
+            case "<": value = valuePrefix + value + valueSuffix + padding; break;
+            case "=": value = valuePrefix + padding + value + valueSuffix; break;
+            case "^": value = padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length); break;
+            default: value = padding + valuePrefix + value + valueSuffix; break;
+          }
+
+          return numerals(value);
+        }
+
+        format.toString = function() {
+          return specifier + "";
+        };
+
+        return format;
+      }
+
+      function formatPrefix(specifier, value) {
+        var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)),
+            e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
+            k = Math.pow(10, -e),
+            prefix = prefixes[8 + e / 3];
+        return function(value) {
+          return f(k * value) + prefix;
+        };
+      }
+
+      return {
+        format: newFormat,
+        formatPrefix: formatPrefix
+      };
+    }
+
+    var locale;
+    var format;
+    var formatPrefix;
+
+    defaultLocale({
+      thousands: ",",
+      grouping: [3],
+      currency: ["$", ""]
+    });
+
+    function defaultLocale(definition) {
+      locale = formatLocale(definition);
+      format = locale.format;
+      formatPrefix = locale.formatPrefix;
+      return locale;
+    }
+
+    function precisionFixed(step) {
+      return Math.max(0, -exponent(Math.abs(step)));
+    }
+
+    function precisionPrefix(step, value) {
+      return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3 - exponent(Math.abs(step)));
+    }
+
+    function precisionRound(step, max) {
+      step = Math.abs(step), max = Math.abs(max) - step;
+      return Math.max(0, exponent(max) - exponent(step)) + 1;
     }
 
     var epsilon = 1e-6;
@@ -2136,7 +2796,7 @@ var app = (function () {
       };
     }
 
-    var identity = x => x;
+    var identity$1 = x => x;
 
     var areaSum = new Adder(),
         areaRingSum = new Adder(),
@@ -2490,7 +3150,7 @@ var app = (function () {
       };
 
       path.projection = function(_) {
-        return arguments.length ? (projectionStream = _ == null ? (projection = null, identity) : (projection = _).stream, path) : projection;
+        return arguments.length ? (projectionStream = _ == null ? (projection = null, identity$1) : (projection = _).stream, path) : projection;
       };
 
       path.context = function(_) {
@@ -2509,7 +3169,7 @@ var app = (function () {
       return path.projection(projection).context(context);
     }
 
-    function transformer(methods) {
+    function transformer$1(methods) {
       return function(stream) {
         var s = new TransformStream;
         for (var key in methods) s[key] = methods[key];
@@ -2583,7 +3243,7 @@ var app = (function () {
     }
 
     function resampleNone(project) {
-      return transformer({
+      return transformer$1({
         point: function(x, y) {
           x = project(x, y);
           this.stream.point(x[0], x[1]);
@@ -2674,14 +3334,14 @@ var app = (function () {
       };
     }
 
-    var transformRadians = transformer({
+    var transformRadians = transformer$1({
       point: function(x, y) {
         this.stream.point(x * radians, y * radians);
       }
     });
 
     function transformRotate(rotate) {
-      return transformer({
+      return transformer$1({
         point: function(x, y) {
           var r = rotate(x, y);
           return this.stream.point(r[0], r[1]);
@@ -2734,7 +3394,7 @@ var app = (function () {
           sx = 1, // reflectX
           sy = 1, // reflectX
           theta = null, preclip = clipAntimeridian, // pre-clip angle
-          x0 = null, y0, x1, y1, postclip = identity, // post-clip extent
+          x0 = null, y0, x1, y1, postclip = identity$1, // post-clip extent
           delta2 = 0.5, // precision
           projectResample,
           projectTransform,
@@ -2768,7 +3428,7 @@ var app = (function () {
       };
 
       projection.clipExtent = function(_) {
-        return arguments.length ? (postclip = _ == null ? (x0 = y0 = x1 = y1 = null, identity) : clipRectangle(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]), reset()) : x0 == null ? null : [[x0, y0], [x1, y1]];
+        return arguments.length ? (postclip = _ == null ? (x0 = y0 = x1 = y1 = null, identity$1) : clipRectangle(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]), reset()) : x0 == null ? null : [[x0, y0], [x1, y1]];
       };
 
       projection.scale = function(_) {
@@ -2867,6 +3527,239 @@ var app = (function () {
           .scale(175.295);
     }
 
+    function initRange(domain, range) {
+      switch (arguments.length) {
+        case 0: break;
+        case 1: this.range(domain); break;
+        default: this.range(range).domain(domain); break;
+      }
+      return this;
+    }
+
+    function constants(x) {
+      return function() {
+        return x;
+      };
+    }
+
+    function number(x) {
+      return +x;
+    }
+
+    var unit = [0, 1];
+
+    function identity(x) {
+      return x;
+    }
+
+    function normalize(a, b) {
+      return (b -= (a = +a))
+          ? function(x) { return (x - a) / b; }
+          : constants(isNaN(b) ? NaN : 0.5);
+    }
+
+    function clamper(a, b) {
+      var t;
+      if (a > b) t = a, a = b, b = t;
+      return function(x) { return Math.max(a, Math.min(b, x)); };
+    }
+
+    // normalize(a, b)(x) takes a domain value x in [a,b] and returns the corresponding parameter t in [0,1].
+    // interpolate(a, b)(t) takes a parameter t in [0,1] and returns the corresponding range value x in [a,b].
+    function bimap(domain, range, interpolate) {
+      var d0 = domain[0], d1 = domain[1], r0 = range[0], r1 = range[1];
+      if (d1 < d0) d0 = normalize(d1, d0), r0 = interpolate(r1, r0);
+      else d0 = normalize(d0, d1), r0 = interpolate(r0, r1);
+      return function(x) { return r0(d0(x)); };
+    }
+
+    function polymap(domain, range, interpolate) {
+      var j = Math.min(domain.length, range.length) - 1,
+          d = new Array(j),
+          r = new Array(j),
+          i = -1;
+
+      // Reverse descending domains.
+      if (domain[j] < domain[0]) {
+        domain = domain.slice().reverse();
+        range = range.slice().reverse();
+      }
+
+      while (++i < j) {
+        d[i] = normalize(domain[i], domain[i + 1]);
+        r[i] = interpolate(range[i], range[i + 1]);
+      }
+
+      return function(x) {
+        var i = bisect(domain, x, 1, j) - 1;
+        return r[i](d[i](x));
+      };
+    }
+
+    function copy(source, target) {
+      return target
+          .domain(source.domain())
+          .range(source.range())
+          .interpolate(source.interpolate())
+          .clamp(source.clamp())
+          .unknown(source.unknown());
+    }
+
+    function transformer() {
+      var domain = unit,
+          range = unit,
+          interpolate$1 = interpolate,
+          transform,
+          untransform,
+          unknown,
+          clamp = identity,
+          piecewise,
+          output,
+          input;
+
+      function rescale() {
+        var n = Math.min(domain.length, range.length);
+        if (clamp !== identity) clamp = clamper(domain[0], domain[n - 1]);
+        piecewise = n > 2 ? polymap : bimap;
+        output = input = null;
+        return scale;
+      }
+
+      function scale(x) {
+        return x == null || isNaN(x = +x) ? unknown : (output || (output = piecewise(domain.map(transform), range, interpolate$1)))(transform(clamp(x)));
+      }
+
+      scale.invert = function(y) {
+        return clamp(untransform((input || (input = piecewise(range, domain.map(transform), interpolateNumber)))(y)));
+      };
+
+      scale.domain = function(_) {
+        return arguments.length ? (domain = Array.from(_, number), rescale()) : domain.slice();
+      };
+
+      scale.range = function(_) {
+        return arguments.length ? (range = Array.from(_), rescale()) : range.slice();
+      };
+
+      scale.rangeRound = function(_) {
+        return range = Array.from(_), interpolate$1 = interpolateRound, rescale();
+      };
+
+      scale.clamp = function(_) {
+        return arguments.length ? (clamp = _ ? true : identity, rescale()) : clamp !== identity;
+      };
+
+      scale.interpolate = function(_) {
+        return arguments.length ? (interpolate$1 = _, rescale()) : interpolate$1;
+      };
+
+      scale.unknown = function(_) {
+        return arguments.length ? (unknown = _, scale) : unknown;
+      };
+
+      return function(t, u) {
+        transform = t, untransform = u;
+        return rescale();
+      };
+    }
+
+    function continuous() {
+      return transformer()(identity, identity);
+    }
+
+    function tickFormat(start, stop, count, specifier) {
+      var step = tickStep(start, stop, count),
+          precision;
+      specifier = formatSpecifier(specifier == null ? ",f" : specifier);
+      switch (specifier.type) {
+        case "s": {
+          var value = Math.max(Math.abs(start), Math.abs(stop));
+          if (specifier.precision == null && !isNaN(precision = precisionPrefix(step, value))) specifier.precision = precision;
+          return formatPrefix(specifier, value);
+        }
+        case "":
+        case "e":
+        case "g":
+        case "p":
+        case "r": {
+          if (specifier.precision == null && !isNaN(precision = precisionRound(step, Math.max(Math.abs(start), Math.abs(stop))))) specifier.precision = precision - (specifier.type === "e");
+          break;
+        }
+        case "f":
+        case "%": {
+          if (specifier.precision == null && !isNaN(precision = precisionFixed(step))) specifier.precision = precision - (specifier.type === "%") * 2;
+          break;
+        }
+      }
+      return format(specifier);
+    }
+
+    function linearish(scale) {
+      var domain = scale.domain;
+
+      scale.ticks = function(count) {
+        var d = domain();
+        return ticks(d[0], d[d.length - 1], count == null ? 10 : count);
+      };
+
+      scale.tickFormat = function(count, specifier) {
+        var d = domain();
+        return tickFormat(d[0], d[d.length - 1], count == null ? 10 : count, specifier);
+      };
+
+      scale.nice = function(count) {
+        if (count == null) count = 10;
+
+        var d = domain();
+        var i0 = 0;
+        var i1 = d.length - 1;
+        var start = d[i0];
+        var stop = d[i1];
+        var prestep;
+        var step;
+        var maxIter = 10;
+
+        if (stop < start) {
+          step = start, start = stop, stop = step;
+          step = i0, i0 = i1, i1 = step;
+        }
+        
+        while (maxIter-- > 0) {
+          step = tickIncrement(start, stop, count);
+          if (step === prestep) {
+            d[i0] = start;
+            d[i1] = stop;
+            return domain(d);
+          } else if (step > 0) {
+            start = Math.floor(start / step) * step;
+            stop = Math.ceil(stop / step) * step;
+          } else if (step < 0) {
+            start = Math.ceil(start * step) / step;
+            stop = Math.floor(stop * step) / step;
+          } else {
+            break;
+          }
+          prestep = step;
+        }
+
+        return scale;
+      };
+
+      return scale;
+    }
+
+    function linear() {
+      var scale = continuous();
+
+      scale.copy = function() {
+        return copy(scale, linear());
+      };
+
+      initRange.apply(scale, arguments);
+
+      return linearish(scale);
+    }
+
     /**
     	Move an element to the last child. Adapted from d3-selection `.raise`: https://github.com/d3/d3-selection#selection_raise
     	@param {Element} el The list to flatten.
@@ -2911,19 +3804,22 @@ var app = (function () {
         };
     }
 
-    /* src/Marks.svelte generated by Svelte v3.46.4 */
-    const file$1 = "src/Marks.svelte";
+    /* src/App.svelte generated by Svelte v3.46.4 */
+
+    const { console: console_1 } = globals;
+    const file = "src/App.svelte";
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[9] = list[i];
+    	child_ctx[10] = list[i];
     	return child_ctx;
     }
 
-    // (51:0) {#each dataset as data}
+    // (71:2) {#each dataset as data}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
+    	let path_1_fill_value;
     	let path_1_transition;
     	let current;
     	let mounted;
@@ -2932,10 +3828,10 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			path_1 = svg_element("path");
-    			attr_dev(path_1, "class", "feature-path svelte-1akmn5d");
-    			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[1](/*data*/ ctx[9]));
-    			attr_dev(path_1, "fill", "hsl(" + Math.floor(Math.random() * 101) + ",100%,50%)");
-    			add_location(path_1, file$1, 51, 1, 1597);
+    			attr_dev(path_1, "class", "feature-path svelte-16xp0gf");
+    			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[10]));
+    			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[10].properties.name.length));
+    			add_location(path_1, file, 71, 3, 2092);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -2946,7 +3842,7 @@ var app = (function () {
     					path_1,
     					"mousemove",
     					function () {
-    						if (is_function(/*handleMousemove*/ ctx[2](/*data*/ ctx[9]))) /*handleMousemove*/ ctx[2](/*data*/ ctx[9]).apply(this, arguments);
+    						if (is_function(/*handleMousemove*/ ctx[5](/*data*/ ctx[10]))) /*handleMousemove*/ ctx[5](/*data*/ ctx[10]).apply(this, arguments);
     					},
     					false,
     					false,
@@ -2959,8 +3855,12 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (!current || dirty & /*dataset*/ 1 && path_1_d_value !== (path_1_d_value = /*path*/ ctx[1](/*data*/ ctx[9]))) {
+    			if (!current || dirty & /*dataset*/ 1 && path_1_d_value !== (path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[10]))) {
     				attr_dev(path_1, "d", path_1_d_value);
+    			}
+
+    			if (!current || dirty & /*colorScale, dataset*/ 3 && path_1_fill_value !== (path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[10].properties.name.length))) {
+    				attr_dev(path_1, "fill", path_1_fill_value);
     			}
     		},
     		i: function intro(local) {
@@ -3010,15 +3910,16 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(51:0) {#each dataset as data}",
+    		source: "(71:2) {#each dataset as data}",
     		ctx
     	});
 
     	return block;
     }
 
-    function create_fragment$1(ctx) {
-    	let each_1_anchor;
+    function create_fragment(ctx) {
+    	let main;
+    	let svg;
     	let current;
     	let each_value = /*dataset*/ ctx[0];
     	validate_each_argument(each_value);
@@ -3034,25 +3935,33 @@ var app = (function () {
 
     	const block = {
     		c: function create() {
+    			main = element("main");
+    			svg = svg_element("svg");
+
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			each_1_anchor = empty();
+    			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
+    			add_location(svg, file, 69, 1, 2026);
+    			attr_dev(main, "class", "svelte-16xp0gf");
+    			add_location(main, file, 68, 0, 2018);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
     		},
     		m: function mount(target, anchor) {
+    			insert_dev(target, main, anchor);
+    			append_dev(main, svg);
+
     			for (let i = 0; i < each_blocks.length; i += 1) {
-    				each_blocks[i].m(target, anchor);
+    				each_blocks[i].m(svg, null);
     			}
 
-    			insert_dev(target, each_1_anchor, anchor);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*path, dataset, Math, quadInOut, handleMousemove*/ 7) {
+    			if (dirty & /*path, dataset, colorScale, quadInOut, handleMousemove*/ 51) {
     				each_value = /*dataset*/ ctx[0];
     				validate_each_argument(each_value);
     				let i;
@@ -3067,7 +3976,7 @@ var app = (function () {
     						each_blocks[i] = create_each_block(child_ctx);
     						each_blocks[i].c();
     						transition_in(each_blocks[i], 1);
-    						each_blocks[i].m(each_1_anchor.parentNode, each_1_anchor);
+    						each_blocks[i].m(svg, null);
     					}
     				}
 
@@ -3099,169 +4008,8 @@ var app = (function () {
     			current = false;
     		},
     		d: function destroy(detaching) {
-    			destroy_each(each_blocks, detaching);
-    			if (detaching) detach_dev(each_1_anchor);
-    		}
-    	};
-
-    	dispatch_dev("SvelteRegisterBlock", {
-    		block,
-    		id: create_fragment$1.name,
-    		type: "component",
-    		source: "",
-    		ctx
-    	});
-
-    	return block;
-    }
-
-    function instance$1($$self, $$props, $$invalidate) {
-    	let { $$slots: slots = {}, $$scope } = $$props;
-    	validate_slots('Marks', slots, []);
-    	let { dataset = [] } = $$props;
-    	const sphere = { type: 'Sphere' };
-    	var height = window.innerHeight * 0.95;
-    	var width = window.innerWidth * 0.95;
-    	const projection = geoNaturalEarth1().fitSize([width, height], sphere);
-    	const path = geoPath(projection);
-
-    	//svelte event dispatcher(?)
-    	const dispatch = createEventDispatcher();
-
-    	function handleMousemove(feature) {
-    		return function handleMousemoveFn(e) {
-    			//raise: Layercake component(?) Used to handle borders of neighboring countries
-    			raise(this);
-
-    			if (e.layerX !== 0 && e.layerY !== 0) {
-    				//could be named however 
-    				//props function unknown, seems to be used to access what is being passed in here from other svelte file
-    				dispatch('eventname', { e, props: feature });
-    			}
-    		};
-    	}
-
-    	function randomColor() {
-    		let first = Math.floor(Math.random() * 101);
-    		let second = Math.floor(Math.random() * 101) + "%";
-    		let third = Math.floor(Math.random() * 101) + "%";
-    		return hsl(first, second, third);
-    	}
-
-    	const writable_props = ['dataset'];
-
-    	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<Marks> was created with unknown prop '${key}'`);
-    	});
-
-    	$$self.$$set = $$props => {
-    		if ('dataset' in $$props) $$invalidate(0, dataset = $$props.dataset);
-    	};
-
-    	$$self.$capture_state = () => ({
-    		geoPath,
-    		geoNaturalEarth1,
-    		hsl,
-    		createEventDispatcher,
-    		raise,
-    		draw,
-    		quadInOut,
-    		dataset,
-    		sphere,
-    		height,
-    		width,
-    		projection,
-    		path,
-    		dispatch,
-    		handleMousemove,
-    		randomColor
-    	});
-
-    	$$self.$inject_state = $$props => {
-    		if ('dataset' in $$props) $$invalidate(0, dataset = $$props.dataset);
-    		if ('height' in $$props) height = $$props.height;
-    		if ('width' in $$props) width = $$props.width;
-    	};
-
-    	if ($$props && "$$inject" in $$props) {
-    		$$self.$inject_state($$props.$$inject);
-    	}
-
-    	return [dataset, path, handleMousemove];
-    }
-
-    class Marks extends SvelteComponentDev {
-    	constructor(options) {
-    		super(options);
-    		init(this, options, instance$1, create_fragment$1, safe_not_equal, { dataset: 0 });
-
-    		dispatch_dev("SvelteRegisterComponent", {
-    			component: this,
-    			tagName: "Marks",
-    			options,
-    			id: create_fragment$1.name
-    		});
-    	}
-
-    	get dataset() {
-    		throw new Error("<Marks>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-
-    	set dataset(value) {
-    		throw new Error("<Marks>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
-    	}
-    }
-
-    /* src/App.svelte generated by Svelte v3.46.4 */
-    const file = "src/App.svelte";
-
-    function create_fragment(ctx) {
-    	let main;
-    	let svg;
-    	let marks;
-    	let current;
-
-    	marks = new Marks({
-    			props: { dataset: /*dataset*/ ctx[0] },
-    			$$inline: true
-    		});
-
-    	const block = {
-    		c: function create() {
-    			main = element("main");
-    			svg = svg_element("svg");
-    			create_component(marks.$$.fragment);
-    			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[1] + " " + /*height*/ ctx[2]);
-    			add_location(svg, file, 26, 1, 602);
-    			attr_dev(main, "class", "svelte-161625f");
-    			add_location(main, file, 25, 0, 594);
-    		},
-    		l: function claim(nodes) {
-    			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
-    		},
-    		m: function mount(target, anchor) {
-    			insert_dev(target, main, anchor);
-    			append_dev(main, svg);
-    			mount_component(marks, svg, null);
-    			current = true;
-    		},
-    		p: function update(ctx, [dirty]) {
-    			const marks_changes = {};
-    			if (dirty & /*dataset*/ 1) marks_changes.dataset = /*dataset*/ ctx[0];
-    			marks.$set(marks_changes);
-    		},
-    		i: function intro(local) {
-    			if (current) return;
-    			transition_in(marks.$$.fragment, local);
-    			current = true;
-    		},
-    		o: function outro(local) {
-    			transition_out(marks.$$.fragment, local);
-    			current = false;
-    		},
-    		d: function destroy(detaching) {
     			if (detaching) detach_dev(main);
-    			destroy_component(marks);
+    			destroy_each(each_blocks, detaching);
     		}
     	};
 
@@ -3280,36 +4028,103 @@ var app = (function () {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('App', slots, []);
     	let dataset = [];
+    	let dataset2 = [];
+    	const sphere = { type: 'Sphere' };
+    	var height = window.innerHeight * 0.95;
+    	var width = window.innerWidth * 0.95;
 
-    	//let idList = [];
-    	json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson').then(data => {
+    	let colorScale = () => {
+    		
+    	};
+
+    	const projection = geoNaturalEarth1().fitSize([width, height], sphere);
+    	const path = geoPath(projection);
+
+    	//fetch both json file
+    	json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson').then(data1 => {
     		//data has all the information of countries: names, id, geomatrical data, etc.
     		//then save all that into an array named "dataset"
-    		$$invalidate(0, dataset = data.features);
-    	}); // for (let i = 0; i < dataset.length; i++) {
-    	// 	idList.push(dataset[i].id)
-    	// }
-    	// console.log(idList);
+    		$$invalidate(0, dataset = data1.features);
 
-    	const width = window.innerWidth;
-    	const height = window.innerHeight;
+    		json('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.json').then(data2 => {
+    			for (let key in data2) {
+    				dataset2.push(data2[key]);
+    			}
+
+    			//add energy data into the geojson file, under properties
+    			//some countries will be missing energy data due to the missing ID
+    			dataset.forEach(i => {
+    				dataset2.forEach(j => {
+    					if (i.id == j.iso_code) {
+    						i.properties.data = j.data;
+    					}
+    				});
+    			});
+
+    			console.log(dataset);
+    			const nameExtent = extent(dataset, d => d.properties.name.length);
+    			$$invalidate(1, colorScale = linear().domain(nameExtent).range(["white", "black"]));
+    		});
+    	});
+
+    	//svelte event dispatcher(?)
+    	const dispatch = createEventDispatcher();
+
+    	function handleMousemove(feature) {
+    		return function handleMousemoveFn(e) {
+    			//raise: Layercake component(?) Used to handle borders of neighboring countries
+    			raise(this);
+
+    			if (e.layerX !== 0 && e.layerY !== 0) {
+    				//could be named however 
+    				//props function unknown, seems to be used to access what is being passed in here from other svelte file
+    				dispatch('eventname', { e, props: feature });
+    			}
+    		};
+    	}
+
     	const writable_props = [];
 
     	Object.keys($$props).forEach(key => {
-    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console.warn(`<App> was created with unknown prop '${key}'`);
+    		if (!~writable_props.indexOf(key) && key.slice(0, 2) !== '$$' && key !== 'slot') console_1.warn(`<App> was created with unknown prop '${key}'`);
     	});
 
-    	$$self.$capture_state = () => ({ json, Marks, dataset, width, height });
+    	$$self.$capture_state = () => ({
+    		json,
+    		geoPath,
+    		geoNaturalEarth1,
+    		scaleLinear: linear,
+    		extent,
+    		hsl,
+    		createEventDispatcher,
+    		raise,
+    		draw,
+    		quadInOut,
+    		dataset,
+    		dataset2,
+    		sphere,
+    		height,
+    		width,
+    		colorScale,
+    		projection,
+    		path,
+    		dispatch,
+    		handleMousemove
+    	});
 
     	$$self.$inject_state = $$props => {
     		if ('dataset' in $$props) $$invalidate(0, dataset = $$props.dataset);
+    		if ('dataset2' in $$props) dataset2 = $$props.dataset2;
+    		if ('height' in $$props) $$invalidate(2, height = $$props.height);
+    		if ('width' in $$props) $$invalidate(3, width = $$props.width);
+    		if ('colorScale' in $$props) $$invalidate(1, colorScale = $$props.colorScale);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [dataset, width, height];
+    	return [dataset, colorScale, height, width, path, handleMousemove];
     }
 
     class App extends SvelteComponentDev {
