@@ -4007,7 +4007,7 @@ var app = (function () {
     			attr_dev(path_1, "class", "feature-path svelte-1rd55wh");
     			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]));
     			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data));
-    			add_location(path_1, file, 111, 3, 3710);
+    			add_location(path_1, file, 111, 3, 3702);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4123,11 +4123,11 @@ var app = (function () {
     			t = space();
     			select = element("select");
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
-    			add_location(svg, file, 109, 1, 3644);
+    			add_location(svg, file, 109, 1, 3636);
     			attr_dev(select, "id", "yearSelect");
-    			add_location(select, file, 122, 1, 4021);
+    			add_location(select, file, 122, 1, 4013);
     			attr_dev(main, "class", "svelte-1rd55wh");
-    			add_location(main, file, 107, 0, 3612);
+    			add_location(main, file, 107, 0, 3604);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4300,8 +4300,8 @@ var app = (function () {
     		});
     	});
 
-    	function handleMousemove(feature) {
-    		return function handleMousemoveFn(e) {
+    	function handleMousemove() {
+    		return function handleMousemoveFn() {
     			//raise: Layercake component(?) Used to handle borders of neighboring countries
     			raise(this);
     		};
