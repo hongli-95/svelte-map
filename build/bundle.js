@@ -4280,7 +4280,7 @@ var app = (function () {
 
     				dataset.forEach(i => {
     					data2.forEach(j => {
-    						if (i.id == j.iso_code && currentSelect == j.year) {
+    						if (i.id == j.iso_code && j.year == currentSelect) {
     							//j.propertyName determines what data is pulled from the csv file
     							//Using population data for now for the sake of simplicity 
     							//Will probably add all the data from the csv at the end, and use a dropdown to choose which data to display
