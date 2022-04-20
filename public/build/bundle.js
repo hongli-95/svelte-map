@@ -196,25 +196,6 @@ var app = (function () {
     function set_current_component(component) {
         current_component = component;
     }
-    function get_current_component() {
-        if (!current_component)
-            throw new Error('Function called outside component initialization');
-        return current_component;
-    }
-    function createEventDispatcher() {
-        const component = get_current_component();
-        return (type, detail) => {
-            const callbacks = component.$$.callbacks[type];
-            if (callbacks) {
-                // TODO are there situations where events could be dispatched
-                // in a server (non-DOM) environment?
-                const event = custom_event(type, detail);
-                callbacks.slice().forEach(fn => {
-                    fn.call(component, event);
-                });
-            }
-        };
-    }
 
     const dirty_components = [];
     const binding_callbacks = [];
@@ -4006,11 +3987,11 @@ var app = (function () {
 
     function get_each_context(ctx, list, i) {
     	const child_ctx = ctx.slice();
-    	child_ctx[9] = list[i];
+    	child_ctx[8] = list[i];
     	return child_ctx;
     }
 
-    // (115:2) {#each dataset as data}
+    // (110:2) {#each dataset as data}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
@@ -4024,9 +4005,9 @@ var app = (function () {
     		c: function create() {
     			path_1 = svg_element("path");
     			attr_dev(path_1, "class", "feature-path svelte-1rd55wh");
-    			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[9]));
-    			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[9].properties.data));
-    			add_location(path_1, file, 115, 3, 3643);
+    			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]));
+    			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data));
+    			add_location(path_1, file, 110, 3, 3687);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4037,7 +4018,7 @@ var app = (function () {
     					path_1,
     					"mousemove",
     					function () {
-    						if (is_function(/*handleMousemove*/ ctx[5](/*data*/ ctx[9]))) /*handleMousemove*/ ctx[5](/*data*/ ctx[9]).apply(this, arguments);
+    						if (is_function(/*handleMousemove*/ ctx[5](/*data*/ ctx[8]))) /*handleMousemove*/ ctx[5](/*data*/ ctx[8]).apply(this, arguments);
     					},
     					false,
     					false,
@@ -4050,11 +4031,11 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (!current || dirty & /*dataset*/ 1 && path_1_d_value !== (path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[9]))) {
+    			if (!current || dirty & /*dataset*/ 1 && path_1_d_value !== (path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]))) {
     				attr_dev(path_1, "d", path_1_d_value);
     			}
 
-    			if (!current || dirty & /*colorScale, dataset*/ 3 && path_1_fill_value !== (path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[9].properties.data))) {
+    			if (!current || dirty & /*colorScale, dataset*/ 3 && path_1_fill_value !== (path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data))) {
     				attr_dev(path_1, "fill", path_1_fill_value);
     			}
     		},
@@ -4105,7 +4086,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(115:2) {#each dataset as data}",
+    		source: "(110:2) {#each dataset as data}",
     		ctx
     	});
 
@@ -4142,11 +4123,11 @@ var app = (function () {
     			t = space();
     			select = element("select");
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
-    			add_location(svg, file, 113, 1, 3577);
+    			add_location(svg, file, 108, 1, 3621);
     			attr_dev(select, "id", "yearSelect");
-    			add_location(select, file, 124, 1, 3877);
+    			add_location(select, file, 121, 1, 3998);
     			attr_dev(main, "class", "svelte-1rd55wh");
-    			add_location(main, file, 111, 0, 3545);
+    			add_location(main, file, 106, 0, 3589);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4245,7 +4226,7 @@ var app = (function () {
 
     	const path = geoPath(projection);
 
-    	//OLD CODE
+    	//----------------------------------  OLD CODE STARTS HERE
     	//fetch both json file
     	// json(
     	// 	'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
@@ -4271,6 +4252,7 @@ var app = (function () {
     	// 			colorScale = scaleLinear().domain(nameExtent).range(["white", "black"])
     	// 	})
     	// });
+    	//----------------------------------  OLD CODE ENDS HERE
     	//fetch the geographical data from geojson, process with d3
     	json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson').then(data1 => {
     		//data has all the information of countries: names, id, geomatrical data, etc.
@@ -4279,7 +4261,7 @@ var app = (function () {
 
     		//fetch energy data from a csv file, process with d3
     		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then(data2 => {
-    			//use the year in data to create a dropdown
+    			//use the year in data to create a dropdown (probably switch to a slider later)
     			let dropdown = document.getElementById('yearSelect');
 
     			data2.forEach(i => {
@@ -4299,6 +4281,9 @@ var app = (function () {
     				dataset.forEach(i => {
     					data2.forEach(j => {
     						if (i.id == j.iso_code && currentSelect == j.year) {
+    							//j.propertyName determines what data is pulled from the csv file
+    							//Using population data for now for the sake of simplicity 
+    							//Will probably add all the data from the csv at the end, and use a dropdown to choose which data to display
     							i.properties.data = j.population;
     						}
     					});
@@ -4314,19 +4299,10 @@ var app = (function () {
     		});
     	});
 
-    	//svelte event dispatcher(?)
-    	const dispatch = createEventDispatcher();
-
     	function handleMousemove(feature) {
     		return function handleMousemoveFn(e) {
     			//raise: Layercake component(?) Used to handle borders of neighboring countries
     			raise(this);
-
-    			if (e.layerX !== 0 && e.layerY !== 0) {
-    				//could be named however 
-    				//props function unknown, seems to be used to access what is being passed in here from other svelte file
-    				dispatch('eventname', { e, props: feature });
-    			}
     		};
     	}
 
@@ -4343,7 +4319,6 @@ var app = (function () {
     		geoNaturalEarth1,
     		scaleLinear: linear,
     		extent,
-    		createEventDispatcher,
     		raise,
     		draw,
     		quadInOut,
@@ -4354,7 +4329,6 @@ var app = (function () {
     		colorScale,
     		projection,
     		path,
-    		dispatch,
     		handleMousemove
     	});
 

@@ -1,7 +1,6 @@
 <script>
 	import { json, csv } from 'd3';
 	import { geoPath, geoNaturalEarth1, scaleLinear, extent } from 'd3';
-	import { createEventDispatcher } from 'svelte';
 	import { raise } from 'layercake';
 	import { draw } from 'svelte/transition';
 	import { quadInOut } from 'Svelte/easing';
@@ -63,6 +62,7 @@
 
 			//use the year in data to create a dropdown (probably switch to a slider later)
 			let dropdown = document.getElementById('yearSelect');
+			
 			data2.forEach((i) => {
 				let option = document.createElement("option");
 				if (i.iso_code == "AFG"){
@@ -95,20 +95,10 @@
 		})
 	})
 
-
-	//svelte event dispatcher(?)
-	const dispatch = createEventDispatcher();
-
 	function handleMousemove(feature) {
 		return function handleMousemoveFn(e) {
 			//raise: Layercake component(?) Used to handle borders of neighboring countries
 			raise(this);
-			if (e.layerX !== 0 && e.layerY !== 0) {
-
-				//could be named however 
-				//props function unknown, seems to be used to access what is being passed in here from other svelte file
-				dispatch('eventname', {e, props: feature })
-			}
 		}
 	}
 
