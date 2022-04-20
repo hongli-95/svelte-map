@@ -96,8 +96,8 @@
 		})
 	})
 
-	function handleMousemove(feature) {
-		return function handleMousemoveFn(e) {
+	function handleMousemove() {
+		return function handleMousemoveFn() {
 			//raise: Layercake component(?) Used to handle borders of neighboring countries
 			raise(this);
 		}
