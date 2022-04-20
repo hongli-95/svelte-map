@@ -87,10 +87,11 @@
 				})
 				//change the color scaling based on the year selected from the dropdown
 				const numExtent = extent(dataset, d => d.properties.data);
-				colorScale = scaleLinear().domain(numExtent).range(["red", "white"])
+				colorScale = scaleLinear().domain(numExtent).range(["white", "blue"])
 			})
 			
 			console.log(dataset)
+			console.log(data2)
 
 		})
 	})

@@ -3991,7 +3991,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (110:2) {#each dataset as data}
+    // (111:2) {#each dataset as data}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
@@ -4007,7 +4007,7 @@ var app = (function () {
     			attr_dev(path_1, "class", "feature-path svelte-1rd55wh");
     			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]));
     			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data));
-    			add_location(path_1, file, 110, 3, 3687);
+    			add_location(path_1, file, 111, 3, 3710);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4086,7 +4086,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(110:2) {#each dataset as data}",
+    		source: "(111:2) {#each dataset as data}",
     		ctx
     	});
 
@@ -4123,11 +4123,11 @@ var app = (function () {
     			t = space();
     			select = element("select");
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
-    			add_location(svg, file, 108, 1, 3621);
+    			add_location(svg, file, 109, 1, 3644);
     			attr_dev(select, "id", "yearSelect");
-    			add_location(select, file, 121, 1, 3998);
+    			add_location(select, file, 122, 1, 4021);
     			attr_dev(main, "class", "svelte-1rd55wh");
-    			add_location(main, file, 106, 0, 3589);
+    			add_location(main, file, 107, 0, 3612);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4292,10 +4292,11 @@ var app = (function () {
     				//change the color scaling based on the year selected from the dropdown
     				const numExtent = extent(dataset, d => d.properties.data);
 
-    				$$invalidate(1, colorScale = linear().domain(numExtent).range(["red", "white"]));
+    				$$invalidate(1, colorScale = linear().domain(numExtent).range(["white", "blue"]));
     			});
 
     			console.log(dataset);
+    			console.log(data2);
     		});
     	});
 
