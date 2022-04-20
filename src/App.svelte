@@ -19,7 +19,7 @@
 	const projection = geoNaturalEarth1().fitSize([width, height], sphere);
 	const path = geoPath(projection);
 
-	//OLD CODE
+	//----------------------------------  OLD CODE STARTS HERE
 	//fetch both json file
 	// json(
 	// 	'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
@@ -47,6 +47,8 @@
 	// 	})
 
 	// });
+	//----------------------------------  OLD CODE ENDS HERE
+	
 
 	//fetch the geographical data from geojson, process with d3
 	json(
@@ -59,7 +61,7 @@
 		//fetch energy data from a csv file, process with d3
 		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then((data2) => {
 
-			//use the year in data to create a dropdown
+			//use the year in data to create a dropdown (probably switch to a slider later)
 			let dropdown = document.getElementById('yearSelect');
 			data2.forEach((i) => {
 				let option = document.createElement("option");
@@ -76,6 +78,9 @@
 				dataset.forEach((i) => {
 					data2.forEach((j) => {
 						if (i.id == j.iso_code && currentSelect == j.year) {
+							//j.propertyName determines what data is pulled from the csv file
+							//Using population data for now for the sake of simplicity 
+							//Will probably add all the data from the csv at the end, and use a dropdown to choose which data to display
 							i.properties.data = j.population;
 						}
 					})
@@ -123,7 +128,7 @@
 		{/each}
 	</svg>
 
-	<!-- Using a dropdown for now -->
+	<!-- Using a dropdown for now (Probably a slider in the final product) -->
 	<select id = "yearSelect" >	</select>
 	
 </main>
