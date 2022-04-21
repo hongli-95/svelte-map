@@ -1,5 +1,5 @@
 <script>
-	import { json, csv } from 'd3';
+	import { json, csv, min } from 'd3';
 	import { geoPath, geoNaturalEarth1, scaleLinear, extent } from 'd3';
 	import { raise } from 'layercake';
 	import { draw } from 'svelte/transition';
@@ -60,38 +60,39 @@
 		//fetch energy data from a csv file, process with d3
 		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then((data2) => {
 
-			//use the year in data to create a dropdown (probably switch to a slider later)
-			let dropdown = document.getElementById('yearSelect');
 			
+			let slider = document.getElementById('yearSelect');
+			let years = [];
+
+			//get the range of years from any country
 			data2.forEach((i) => {
-				let option = document.createElement("option");
 				if (i.iso_code == "AFG"){
-					option.value = i.year;
-					option.text = i.year;
-					dropdown.append(option);
+					years.push(i.year);
 				}
 			})
+
+			//set the min and max for the slider
+			slider.max = Math.max(...years);
+			slider.min = Math.min(...years);
+			slider.value = Math.min(...years);
 			
-			//add population data based on the year selected from the dropdown
-			dropdown.addEventListener('change', () => {
-				let currentSelect = dropdown.value;
+			//add population data based on the year selected from the slider
+			slider.addEventListener('input', () => {
+				let currentSelect = slider.value;
 				dataset.forEach((i) => {
 					data2.forEach((j) => {
 						if (i.id == j.iso_code && j.year == currentSelect) {
 							//j.propertyName determines what data is pulled from the csv file
 							//Using population data for now for the sake of simplicity 
-							//Will probably add all the data from the csv at the end, and use a dropdown to choose which data to display
+							//Will probably add all the data from the csv at the end, and use a slider to choose which data to display
 							i.properties.data = j.population;
 						}
 					})
 				})
-				//change the color scaling based on the year selected from the dropdown
+				//change the color scaling based on the year selected from the slider
 				const numExtent = extent(dataset, d => d.properties.data);
-				colorScale = scaleLinear().domain(numExtent).range(["white", "blue"])
+				colorScale = scaleLinear().domain(numExtent).range(["blue", "white"])
 			})
-			
-			console.log(dataset)
-			console.log(data2)
 
 		})
 	})
@@ -107,20 +108,25 @@
 
 <main>
 	<!-- draw the map  -->
-	<svg viewBox="0 0 {width} {height}">
-		{#each dataset as data}
-			<path
-				class="feature-path"
-				transition:draw={{ duration: 2000, delay: 0, easing: quadInOut }}
-				d = {path(data)}
-				on:mousemove={handleMousemove(data)}
-				fill = {colorScale(data.properties.data)}
-			/>
-		{/each}
-	</svg>
-
-	<!-- Using a dropdown for now (Probably a slider in the final product) -->
-	<select id = "yearSelect" >	</select>
+	<div id="mapCanvas">
+		<svg viewBox = "0 0 {width} {height}">
+			{#each dataset as data}
+				<path
+					class="feature-path"
+					transition:draw={{ duration: 2000, delay: 0, easing: quadInOut }}
+					d = {path(data)}
+					on:mousemove={handleMousemove(data)}
+					fill = {colorScale(data.properties.data)}
+				/>
+			{/each}
+		</svg>
+	</div>
+	<br>
+	<!-- Using a slider to select which year -->
+	<div id="select">
+		<input type="range" id="yearSelect">
+	</div>
+	
 	
 </main>
 
@@ -129,6 +135,31 @@
 		main {
 			max-width: none;
 		}
+	}
+
+	/* styling for the svg container */
+	#mapCanvas {
+		width: 90%;
+		height: 80%;
+		display: block;
+		margin: auto;
+	}
+
+	/* styling for the silder */
+	#yearSelect {
+		width: 80%;
+		display: block;
+		margin: auto;
+		-webkit-appearance: none;  /* Override default CSS styles */
+		height: 15px;
+		background: #d3d3d3;
+		opacity: 0.5;
+		transition: opacity .2s;
+		border-radius: 10px;
+	}
+
+	#yearSelect:hover {
+		opacity: 1;
 	}
 
 	path {
