@@ -18,37 +18,6 @@
 	const projection = geoNaturalEarth1().fitSize([width, height], sphere);
 	const path = geoPath(projection);
 
-	//----------------------------------  OLD CODE STARTS HERE
-	//fetch both json file
-	// json(
-	// 	'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
-	// ).then((data1) => {
-	// 	//data has all the information of countries: names, id, geomatrical data, etc.
-	// 	//then save all that into an array named "dataset"
-	// 	dataset = data1.features;
-	// 	json('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.json').then((data2) => {
-	// 		for(let key in data2){
-	// 			dataset2.push(data2[key]);
-	// 		}
-	// 		//add energy data into the geojson file, under properties
-	// 		//some countries will be missing energy data due to the missing ID
-	// 		dataset.forEach((i) => {
-	// 			dataset2.forEach((j) => {
-	// 				if (i.id == j.iso_code){
-	// 					i.properties.data = j.data
-	// 				}
-	// 			})
-	// 		})
-	// 		//console.log(dataset)
-	// 			const nameExtent = extent(dataset, d => d.properties.name.length);
-	// 			colorScale = scaleLinear().domain(nameExtent).range(["white", "black"])
-
-	// 	})
-
-	// });
-	//----------------------------------  OLD CODE ENDS HERE
-	
-
 	//fetch the geographical data from geojson, process with d3
 	json(
 		'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
@@ -106,6 +75,7 @@
 
 </script>
 
+
 <main>
 	<!-- draw the map  -->
 	<div id="mapCanvas">
@@ -121,7 +91,9 @@
 			{/each}
 		</svg>
 	</div>
+
 	<br>
+
 	<!-- Using a slider to select which year -->
 	<div id="select">
 		<input type="range" id="yearSelect">
@@ -129,6 +101,7 @@
 	
 	
 </main>
+
 
 <style>
 	@media (min-width: 640px) {
