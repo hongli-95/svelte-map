@@ -815,6 +815,27 @@ var app = (function () {
       return stop < start ? -step1 : step1;
     }
 
+    function max(values, valueof) {
+      let max;
+      if (valueof === undefined) {
+        for (const value of values) {
+          if (value != null
+              && (max < value || (max === undefined && value >= value))) {
+            max = value;
+          }
+        }
+      } else {
+        let index = -1;
+        for (let value of values) {
+          if ((value = valueof(value, ++index, values)) != null
+              && (max < value || (max === undefined && value >= value))) {
+            max = value;
+          }
+        }
+      }
+      return max;
+    }
+
     function min(values, valueof) {
       let min;
       if (valueof === undefined) {
@@ -4004,7 +4025,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (113:3) {#each dataset as data}
+    // (84:3) {#each dataset as data}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
@@ -4020,7 +4041,7 @@ var app = (function () {
     			attr_dev(path_1, "class", "feature-path svelte-jtwj7n");
     			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]));
     			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data));
-    			add_location(path_1, file, 113, 4, 3693);
+    			add_location(path_1, file, 84, 4, 2697);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4099,7 +4120,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(113:3) {#each dataset as data}",
+    		source: "(84:3) {#each dataset as data}",
     		ctx
     	});
 
@@ -4144,19 +4165,19 @@ var app = (function () {
     			div1 = element("div");
     			input = element("input");
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
-    			add_location(svg, file, 111, 2, 3623);
+    			add_location(svg, file, 82, 2, 2627);
     			attr_dev(div0, "id", "mapCanvas");
     			attr_dev(div0, "class", "svelte-jtwj7n");
-    			add_location(div0, file, 110, 1, 3600);
-    			add_location(br, file, 123, 1, 3943);
+    			add_location(div0, file, 81, 1, 2604);
+    			add_location(br, file, 95, 1, 2948);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "id", "yearSelect");
     			attr_dev(input, "class", "svelte-jtwj7n");
-    			add_location(input, file, 126, 2, 4015);
+    			add_location(input, file, 99, 2, 3021);
     			attr_dev(div1, "id", "select");
-    			add_location(div1, file, 125, 1, 3995);
+    			add_location(div1, file, 98, 1, 3001);
     			attr_dev(main, "class", "svelte-jtwj7n");
-    			add_location(main, file, 108, 0, 3568);
+    			add_location(main, file, 79, 0, 2572);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4259,33 +4280,6 @@ var app = (function () {
 
     	const path = geoPath(projection);
 
-    	//----------------------------------  OLD CODE STARTS HERE
-    	//fetch both json file
-    	// json(
-    	// 	'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
-    	// ).then((data1) => {
-    	// 	//data has all the information of countries: names, id, geomatrical data, etc.
-    	// 	//then save all that into an array named "dataset"
-    	// 	dataset = data1.features;
-    	// 	json('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.json').then((data2) => {
-    	// 		for(let key in data2){
-    	// 			dataset2.push(data2[key]);
-    	// 		}
-    	// 		//add energy data into the geojson file, under properties
-    	// 		//some countries will be missing energy data due to the missing ID
-    	// 		dataset.forEach((i) => {
-    	// 			dataset2.forEach((j) => {
-    	// 				if (i.id == j.iso_code){
-    	// 					i.properties.data = j.data
-    	// 				}
-    	// 			})
-    	// 		})
-    	// 		//console.log(dataset)
-    	// 			const nameExtent = extent(dataset, d => d.properties.name.length);
-    	// 			colorScale = scaleLinear().domain(nameExtent).range(["white", "black"])
-    	// 	})
-    	// });
-    	//----------------------------------  OLD CODE ENDS HERE
     	//fetch the geographical data from geojson, process with d3
     	json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson').then(data1 => {
     		//data has all the information of countries: names, id, geomatrical data, etc.
@@ -4326,9 +4320,11 @@ var app = (function () {
     				});
 
     				//change the color scaling based on the year selected from the slider
-    				const numExtent = extent(dataset, d => d.properties.data);
+    				//d3.extent compares using natural order instead of numeric order, so parseInt is implemented
+    				//WORKED!!!
+    				const numExtent = extent(dataset, d => parseInt(d.properties.data));
 
-    				$$invalidate(1, colorScale = linear().domain(numExtent).range(["blue", "white"]));
+    				$$invalidate(1, colorScale = linear().domain(numExtent).range(["white", "red"]));
     			});
     		});
     	});
@@ -4349,6 +4345,7 @@ var app = (function () {
     	$$self.$capture_state = () => ({
     		json,
     		csv,
+    		max,
     		min,
     		geoPath,
     		geoNaturalEarth1,

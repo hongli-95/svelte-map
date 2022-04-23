@@ -1,5 +1,5 @@
 <script>
-	import { json, csv, min } from 'd3';
+	import { json, csv, max, min} from 'd3';
 	import { geoPath, geoNaturalEarth1, scaleLinear, extent } from 'd3';
 	import { raise } from 'layercake';
 	import { draw } from 'svelte/transition';
@@ -59,10 +59,11 @@
 					})
 				})
 				//change the color scaling based on the year selected from the slider
-				const numExtent = extent(dataset, d => d.properties.data);
-				colorScale = scaleLinear().domain(numExtent).range(["blue", "white"])
+				//d3.extent compares using natural order instead of numeric order, so parseInt is implemented
+				//WORKED!!!
+				const numExtent = extent(dataset, d => parseInt(d.properties.data));
+				colorScale = scaleLinear().domain(numExtent).range(["white", "red"]);
 			})
-
 		})
 	})
 
