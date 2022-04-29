@@ -27,23 +27,63 @@
 		dataset = data1.features;
 
 		//fetch energy data from a csv file, process with d3
+		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
+		//https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv
 		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then((data2) => {
 
-			
+			let yearLabel = document.getElementById('yearLabel');
 			let slider = document.getElementById('yearSelect');
+			let dropDown = document.getElementById('catSelect');
 			let years = [];
+			let dropDownSelect;
 
-			//get the range of years from any country
 			data2.forEach((i) => {
 				if (i.iso_code == "AFG"){
+					//get the range of years from any single country
 					years.push(i.year);
-				}
+
+					//add categories to compare, based on the categories from any single country, in a random year(1900 ~ 2020)
+					if (i.year == "1999") {
+						for (let propertyName in i) {
+							if (propertyName == "per_capita_electricity") {
+								let x = document.createElement("option")
+								x.text = "Electricity Per Capita"
+								dropDown.appendChild(x)
+							} else if (propertyName == "renewables_elec_per_capita") {
+								let x = document.createElement("option")
+								x.text = "Renewables Electricity Per Capita"
+								dropDown.appendChild(x)
+							} else if (propertyName == "fossil_cons_per_capita") {
+								let x = document.createElement("option")
+								x.text = "Fossil Consumption Per Capita"
+								dropDown.appendChild(x)
+							}
+							dropDown.selectedIndex = 0;
+						}
+					}
+				} 
 			})
 
 			//set the min and max for the slider
 			slider.max = Math.max(...years);
-			slider.min = Math.min(...years);
-			slider.value = Math.min(...years);
+			slider.min = 2000;
+			slider.value = 2000;
+			yearLabel.textContent = slider.value;
+
+			dropDown.addEventListener('change', () => {
+				let currentSelect = dropDown.options[dropDown.selectedIndex].text
+				switch (currentSelect) {
+					case "Fossil Consumption Per Capita":
+						dropDownSelect = "fossil_cons_per_capita"
+						break;
+					case "Renewables Electricity Per Capita":
+						dropDownSelect = "renewables_elec_per_capita"
+						break;
+					case "Electricity Per Capita":
+						dropDownSelect = "per_capita_electricity"
+						break;
+				}
+			})
 			
 			//add population data based on the year selected from the slider
 			slider.addEventListener('input', () => {
@@ -54,15 +94,16 @@
 							//j.propertyName determines what data is pulled from the csv file
 							//Using population data for now for the sake of simplicity 
 							//Will probably add all the data from the csv at the end, and use a slider to choose which data to display
-							i.properties.data = j.population;
+							i.properties.data = parseInt(j[`${dropDownSelect}`]);
 						}
 					})
 				})
 				//change the color scaling based on the year selected from the slider
-				//d3.extent compares using natural order instead of numeric order, so parseInt is implemented
-				//WORKED!!!
-				const numExtent = extent(dataset, d => parseInt(d.properties.data));
+				//d3.extent compares using natural order instead of numeric order, so parseInt (above) is implemented
+				const numExtent = extent(dataset, d => d.properties.data);
 				colorScale = scaleLinear().domain(numExtent).range(["white", "red"]);
+				yearLabel.textContent = slider.value
+				//console.log(data2)
 			})
 		})
 	})
@@ -73,13 +114,16 @@
 			raise(this);
 		}
 	}
-
 </script>
 
 
 <main>
 	<!-- draw the map  -->
 	<div id="mapCanvas">
+		<label id="yearLabel" for="">2000</label>
+		<select id="catSelect">
+			<option value="" disabled selected hidden>Select a Category below...</option>
+		</select>
 		<svg viewBox = "0 0 {width} {height}">
 			{#each dataset as data}
 				<path
@@ -100,7 +144,6 @@
 		<input type="range" id="yearSelect">
 	</div>
 	
-	
 </main>
 
 
@@ -113,8 +156,14 @@
 
 	/* styling for the svg container */
 	#mapCanvas {
-		width: 90%;
+		width: 100%;
 		height: 80%;
+		display: block;
+		margin: auto;
+	}
+
+	svg {
+		width: 90%;
 		display: block;
 		margin: auto;
 	}
@@ -130,6 +179,21 @@
 		opacity: 0.5;
 		transition: opacity .2s;
 		border-radius: 10px;
+	}
+
+	#yearLabel {
+		width: 15%;
+		text-align: left;
+		position: absolute;
+		font-size: xx-large;
+		font-family: Verdana, sans-serif;
+	}
+
+	#catSelect {
+		width: 18%;
+		position: absolute;
+		text-align: left;
+		margin-top: 3em;
 	}
 
 	#yearSelect:hover {
