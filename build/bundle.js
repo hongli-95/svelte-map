@@ -4025,7 +4025,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (84:3) {#each dataset as data}
+    // (128:3) {#each dataset as data}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
@@ -4038,10 +4038,10 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			path_1 = svg_element("path");
-    			attr_dev(path_1, "class", "feature-path svelte-jtwj7n");
+    			attr_dev(path_1, "class", "feature-path svelte-1qooiyj");
     			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]));
     			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data));
-    			add_location(path_1, file, 84, 4, 2697);
+    			add_location(path_1, file, 128, 4, 4544);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4120,7 +4120,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(84:3) {#each dataset as data}",
+    		source: "(128:3) {#each dataset as data}",
     		ctx
     	});
 
@@ -4130,10 +4130,15 @@ var app = (function () {
     function create_fragment(ctx) {
     	let main;
     	let div0;
-    	let svg;
-    	let t0;
-    	let br;
+    	let label;
     	let t1;
+    	let select;
+    	let option;
+    	let t3;
+    	let svg;
+    	let t4;
+    	let br;
+    	let t5;
     	let div1;
     	let input;
     	let current;
@@ -4153,31 +4158,52 @@ var app = (function () {
     		c: function create() {
     			main = element("main");
     			div0 = element("div");
+    			label = element("label");
+    			label.textContent = "2000";
+    			t1 = space();
+    			select = element("select");
+    			option = element("option");
+    			option.textContent = "Select a Category below...";
+    			t3 = space();
     			svg = svg_element("svg");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			t0 = space();
+    			t4 = space();
     			br = element("br");
-    			t1 = space();
+    			t5 = space();
     			div1 = element("div");
     			input = element("input");
+    			attr_dev(label, "id", "yearLabel");
+    			attr_dev(label, "for", "");
+    			attr_dev(label, "class", "svelte-1qooiyj");
+    			add_location(label, file, 122, 2, 4311);
+    			option.__value = "";
+    			option.value = option.__value;
+    			option.disabled = true;
+    			option.selected = true;
+    			option.hidden = true;
+    			add_location(option, file, 124, 3, 4382);
+    			attr_dev(select, "id", "catSelect");
+    			attr_dev(select, "class", "svelte-1qooiyj");
+    			add_location(select, file, 123, 2, 4355);
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
-    			add_location(svg, file, 82, 2, 2627);
+    			attr_dev(svg, "class", "svelte-1qooiyj");
+    			add_location(svg, file, 126, 2, 4474);
     			attr_dev(div0, "id", "mapCanvas");
-    			attr_dev(div0, "class", "svelte-jtwj7n");
-    			add_location(div0, file, 81, 1, 2604);
-    			add_location(br, file, 95, 1, 2948);
+    			attr_dev(div0, "class", "svelte-1qooiyj");
+    			add_location(div0, file, 121, 1, 4288);
+    			add_location(br, file, 139, 1, 4795);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "id", "yearSelect");
-    			attr_dev(input, "class", "svelte-jtwj7n");
-    			add_location(input, file, 99, 2, 3021);
+    			attr_dev(input, "class", "svelte-1qooiyj");
+    			add_location(input, file, 143, 2, 4868);
     			attr_dev(div1, "id", "select");
-    			add_location(div1, file, 98, 1, 3001);
-    			attr_dev(main, "class", "svelte-jtwj7n");
-    			add_location(main, file, 79, 0, 2572);
+    			add_location(div1, file, 142, 1, 4848);
+    			attr_dev(main, "class", "svelte-1qooiyj");
+    			add_location(main, file, 119, 0, 4256);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4185,15 +4211,20 @@ var app = (function () {
     		m: function mount(target, anchor) {
     			insert_dev(target, main, anchor);
     			append_dev(main, div0);
+    			append_dev(div0, label);
+    			append_dev(div0, t1);
+    			append_dev(div0, select);
+    			append_dev(select, option);
+    			append_dev(div0, t3);
     			append_dev(div0, svg);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(svg, null);
     			}
 
-    			append_dev(main, t0);
+    			append_dev(main, t4);
     			append_dev(main, br);
-    			append_dev(main, t1);
+    			append_dev(main, t5);
     			append_dev(main, div1);
     			append_dev(div1, input);
     			current = true;
@@ -4287,22 +4318,65 @@ var app = (function () {
     		$$invalidate(0, dataset = data1.features);
 
     		//fetch energy data from a csv file, process with d3
+    		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
+    		//https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv
     		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then(data2 => {
+    			let yearLabel = document.getElementById('yearLabel');
     			let slider = document.getElementById('yearSelect');
+    			let dropDown = document.getElementById('catSelect');
     			let years = [];
+    			let dropDownSelect;
 
-    			//get the range of years from any country
     			data2.forEach(i => {
     				if (i.iso_code == "AFG") {
+    					//get the range of years from any single country
     					years.push(i.year);
+
+    					//add categories to compare, based on the categories from any single country, in a random year(1900 ~ 2020)
+    					if (i.year == "1999") {
+    						for (let propertyName in i) {
+    							if (propertyName == "per_capita_electricity") {
+    								let x = document.createElement("option");
+    								x.text = "Electricity Per Capita";
+    								dropDown.appendChild(x);
+    							} else if (propertyName == "renewables_elec_per_capita") {
+    								let x = document.createElement("option");
+    								x.text = "Renewables Electricity Per Capita";
+    								dropDown.appendChild(x);
+    							} else if (propertyName == "fossil_cons_per_capita") {
+    								let x = document.createElement("option");
+    								x.text = "Fossil Consumption Per Capita";
+    								dropDown.appendChild(x);
+    							}
+
+    							dropDown.selectedIndex = 0;
+    						}
+    					}
     				}
     			});
 
     			//set the min and max for the slider
     			slider.max = Math.max(...years);
 
-    			slider.min = Math.min(...years);
-    			slider.value = Math.min(...years);
+    			slider.min = 2000;
+    			slider.value = 2000;
+    			yearLabel.textContent = slider.value;
+
+    			dropDown.addEventListener('change', () => {
+    				let currentSelect = dropDown.options[dropDown.selectedIndex].text;
+
+    				switch (currentSelect) {
+    					case "Fossil Consumption Per Capita":
+    						dropDownSelect = "fossil_cons_per_capita";
+    						break;
+    					case "Renewables Electricity Per Capita":
+    						dropDownSelect = "renewables_elec_per_capita";
+    						break;
+    					case "Electricity Per Capita":
+    						dropDownSelect = "per_capita_electricity";
+    						break;
+    				}
+    			});
 
     			//add population data based on the year selected from the slider
     			slider.addEventListener('input', () => {
@@ -4314,18 +4388,18 @@ var app = (function () {
     							//j.propertyName determines what data is pulled from the csv file
     							//Using population data for now for the sake of simplicity 
     							//Will probably add all the data from the csv at the end, and use a slider to choose which data to display
-    							i.properties.data = j.population;
+    							i.properties.data = parseInt(j[`${dropDownSelect}`]);
     						}
     					});
     				});
 
     				//change the color scaling based on the year selected from the slider
-    				//d3.extent compares using natural order instead of numeric order, so parseInt is implemented
-    				//WORKED!!!
-    				const numExtent = extent(dataset, d => parseInt(d.properties.data));
+    				//d3.extent compares using natural order instead of numeric order, so parseInt (above) is implemented
+    				const numExtent = extent(dataset, d => d.properties.data);
 
     				$$invalidate(1, colorScale = linear().domain(numExtent).range(["white", "red"]));
-    			});
+    				yearLabel.textContent = slider.value;
+    			}); //console.log(data2)
     		});
     	});
 
