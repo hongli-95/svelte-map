@@ -1,11 +1,11 @@
 <script>
-	import { json, csv, max, min} from 'd3';
+	import { json, csv} from 'd3';
 	import { geoPath, geoNaturalEarth1, scaleLinear, extent } from 'd3';
 	import { raise } from 'layercake';
 	import { draw } from 'svelte/transition';
 	import { quadInOut } from 'Svelte/easing';
 
-	let dataset = [];
+	let drawThis = [];
 
 	const sphere = { type: 'Sphere' };
 	var height = window.innerHeight * 0.95;
@@ -21,15 +21,15 @@
 	//fetch the geographical data from geojson, process with d3
 	json(
 		'https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson'
-	).then((data1) => {
+	).then((geoData) => {
 		//data has all the information of countries: names, id, geomatrical data, etc.
-		//save all that into an array named "dataset"
-		dataset = data1.features;
+		//save all that into an array named "drawThis"
+		drawThis = geoData.features;
 
 		//fetch energy data from a csv file, process with d3
-		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
 		//https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv
-		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then((data2) => {
+		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
+		csv('https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv').then((energyData) => {
 
 			let yearLabel = document.getElementById('yearLabel');
 			let slider = document.getElementById('yearSelect');
@@ -37,7 +37,7 @@
 			let years = [];
 			let dropDownSelect;
 
-			data2.forEach((i) => {
+			energyData.forEach((i) => {
 				if (i.iso_code == "AFG"){
 					//get the range of years from any single country
 					years.push(i.year);
@@ -58,7 +58,6 @@
 								x.text = "Fossil Consumption Per Capita"
 								dropDown.appendChild(x)
 							}
-							dropDown.selectedIndex = 0;
 						}
 					}
 				} 
@@ -67,9 +66,10 @@
 			//set the min and max for the slider
 			slider.max = Math.max(...years);
 			slider.min = 2000;
-			slider.value = 2000;
+			slider.value = slider.min;
 			yearLabel.textContent = slider.value;
 
+			//event listener for the dropdown 
 			dropDown.addEventListener('change', () => {
 				let currentSelect = dropDown.options[dropDown.selectedIndex].text
 				switch (currentSelect) {
@@ -88,8 +88,8 @@
 			//add population data based on the year selected from the slider
 			slider.addEventListener('input', () => {
 				let currentSelect = slider.value;
-				dataset.forEach((i) => {
-					data2.forEach((j) => {
+				drawThis.forEach((i) => {
+					energyData.forEach((j) => {
 						if (i.id == j.iso_code && j.year == currentSelect) {
 							//j.propertyName determines what data is pulled from the csv file
 							//Using population data for now for the sake of simplicity 
@@ -100,10 +100,10 @@
 				})
 				//change the color scaling based on the year selected from the slider
 				//d3.extent compares using natural order instead of numeric order, so parseInt (above) is implemented
-				const numExtent = extent(dataset, d => d.properties.data);
+				const numExtent = extent(drawThis, d => d.properties.data);
 				colorScale = scaleLinear().domain(numExtent).range(["white", "red"]);
 				yearLabel.textContent = slider.value
-				//console.log(data2)
+				//console.log(numExtent)
 			})
 		})
 	})
@@ -120,18 +120,20 @@
 <main>
 	<!-- draw the map  -->
 	<div id="mapCanvas">
-		<label id="yearLabel" for="">2000</label>
+		<label id="yearLabel" for=""></label>
+
 		<select id="catSelect">
 			<option value="" disabled selected hidden>Select a Category below...</option>
 		</select>
+
 		<svg viewBox = "0 0 {width} {height}">
-			{#each dataset as data}
+			{#each drawThis as eachCountry}
 				<path
 					class="feature-path"
 					transition:draw={{ duration: 2000, delay: 0, easing: quadInOut }}
-					d = {path(data)}
-					on:mousemove={handleMousemove(data)}
-					fill = {colorScale(data.properties.data)}
+					d = {path(eachCountry)}
+					on:mousemove={handleMousemove(eachCountry)}
+					fill = {colorScale(eachCountry.properties.data)}
 				/>
 			{/each}
 		</svg>

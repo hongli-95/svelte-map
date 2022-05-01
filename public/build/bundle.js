@@ -815,48 +815,6 @@ var app = (function () {
       return stop < start ? -step1 : step1;
     }
 
-    function max(values, valueof) {
-      let max;
-      if (valueof === undefined) {
-        for (const value of values) {
-          if (value != null
-              && (max < value || (max === undefined && value >= value))) {
-            max = value;
-          }
-        }
-      } else {
-        let index = -1;
-        for (let value of values) {
-          if ((value = valueof(value, ++index, values)) != null
-              && (max < value || (max === undefined && value >= value))) {
-            max = value;
-          }
-        }
-      }
-      return max;
-    }
-
-    function min(values, valueof) {
-      let min;
-      if (valueof === undefined) {
-        for (const value of values) {
-          if (value != null
-              && (min > value || (min === undefined && value >= value))) {
-            min = value;
-          }
-        }
-      } else {
-        let index = -1;
-        for (let value of values) {
-          if ((value = valueof(value, ++index, values)) != null
-              && (min > value || (min === undefined && value >= value))) {
-            min = value;
-          }
-        }
-      }
-      return min;
-    }
-
     function* flatten(arrays) {
       for (const array of arrays) {
         yield* array;
@@ -4025,7 +3983,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (128:3) {#each dataset as data}
+    // (130:3) {#each drawThis as eachCountry}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
@@ -4039,9 +3997,9 @@ var app = (function () {
     		c: function create() {
     			path_1 = svg_element("path");
     			attr_dev(path_1, "class", "feature-path svelte-1qooiyj");
-    			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]));
-    			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data));
-    			add_location(path_1, file, 128, 4, 4544);
+    			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*eachCountry*/ ctx[8]));
+    			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*eachCountry*/ ctx[8].properties.data));
+    			add_location(path_1, file, 130, 4, 4589);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4052,7 +4010,7 @@ var app = (function () {
     					path_1,
     					"mousemove",
     					function () {
-    						if (is_function(/*handleMousemove*/ ctx[5](/*data*/ ctx[8]))) /*handleMousemove*/ ctx[5](/*data*/ ctx[8]).apply(this, arguments);
+    						if (is_function(/*handleMousemove*/ ctx[5](/*eachCountry*/ ctx[8]))) /*handleMousemove*/ ctx[5](/*eachCountry*/ ctx[8]).apply(this, arguments);
     					},
     					false,
     					false,
@@ -4065,11 +4023,11 @@ var app = (function () {
     		p: function update(new_ctx, dirty) {
     			ctx = new_ctx;
 
-    			if (!current || dirty & /*dataset*/ 1 && path_1_d_value !== (path_1_d_value = /*path*/ ctx[4](/*data*/ ctx[8]))) {
+    			if (!current || dirty & /*drawThis*/ 1 && path_1_d_value !== (path_1_d_value = /*path*/ ctx[4](/*eachCountry*/ ctx[8]))) {
     				attr_dev(path_1, "d", path_1_d_value);
     			}
 
-    			if (!current || dirty & /*colorScale, dataset*/ 3 && path_1_fill_value !== (path_1_fill_value = /*colorScale*/ ctx[1](/*data*/ ctx[8].properties.data))) {
+    			if (!current || dirty & /*colorScale, drawThis*/ 3 && path_1_fill_value !== (path_1_fill_value = /*colorScale*/ ctx[1](/*eachCountry*/ ctx[8].properties.data))) {
     				attr_dev(path_1, "fill", path_1_fill_value);
     			}
     		},
@@ -4120,7 +4078,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(128:3) {#each dataset as data}",
+    		source: "(130:3) {#each drawThis as eachCountry}",
     		ctx
     	});
 
@@ -4131,18 +4089,18 @@ var app = (function () {
     	let main;
     	let div0;
     	let label;
-    	let t1;
+    	let t0;
     	let select;
     	let option;
-    	let t3;
+    	let t2;
     	let svg;
-    	let t4;
+    	let t3;
     	let br;
-    	let t5;
+    	let t4;
     	let div1;
     	let input;
     	let current;
-    	let each_value = /*dataset*/ ctx[0];
+    	let each_value = /*drawThis*/ ctx[0];
     	validate_each_argument(each_value);
     	let each_blocks = [];
 
@@ -4159,51 +4117,50 @@ var app = (function () {
     			main = element("main");
     			div0 = element("div");
     			label = element("label");
-    			label.textContent = "2000";
-    			t1 = space();
+    			t0 = space();
     			select = element("select");
     			option = element("option");
     			option.textContent = "Select a Category below...";
-    			t3 = space();
+    			t2 = space();
     			svg = svg_element("svg");
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].c();
     			}
 
-    			t4 = space();
+    			t3 = space();
     			br = element("br");
-    			t5 = space();
+    			t4 = space();
     			div1 = element("div");
     			input = element("input");
     			attr_dev(label, "id", "yearLabel");
     			attr_dev(label, "for", "");
     			attr_dev(label, "class", "svelte-1qooiyj");
-    			add_location(label, file, 122, 2, 4311);
+    			add_location(label, file, 122, 2, 4350);
     			option.__value = "";
     			option.value = option.__value;
     			option.disabled = true;
     			option.selected = true;
     			option.hidden = true;
-    			add_location(option, file, 124, 3, 4382);
+    			add_location(option, file, 125, 3, 4418);
     			attr_dev(select, "id", "catSelect");
     			attr_dev(select, "class", "svelte-1qooiyj");
-    			add_location(select, file, 123, 2, 4355);
+    			add_location(select, file, 124, 2, 4391);
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
     			attr_dev(svg, "class", "svelte-1qooiyj");
-    			add_location(svg, file, 126, 2, 4474);
+    			add_location(svg, file, 128, 2, 4511);
     			attr_dev(div0, "id", "mapCanvas");
     			attr_dev(div0, "class", "svelte-1qooiyj");
-    			add_location(div0, file, 121, 1, 4288);
-    			add_location(br, file, 139, 1, 4795);
+    			add_location(div0, file, 121, 1, 4327);
+    			add_location(br, file, 141, 1, 4861);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "id", "yearSelect");
     			attr_dev(input, "class", "svelte-1qooiyj");
-    			add_location(input, file, 143, 2, 4868);
+    			add_location(input, file, 145, 2, 4934);
     			attr_dev(div1, "id", "select");
-    			add_location(div1, file, 142, 1, 4848);
+    			add_location(div1, file, 144, 1, 4914);
     			attr_dev(main, "class", "svelte-1qooiyj");
-    			add_location(main, file, 119, 0, 4256);
+    			add_location(main, file, 119, 0, 4295);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4212,26 +4169,26 @@ var app = (function () {
     			insert_dev(target, main, anchor);
     			append_dev(main, div0);
     			append_dev(div0, label);
-    			append_dev(div0, t1);
+    			append_dev(div0, t0);
     			append_dev(div0, select);
     			append_dev(select, option);
-    			append_dev(div0, t3);
+    			append_dev(div0, t2);
     			append_dev(div0, svg);
 
     			for (let i = 0; i < each_blocks.length; i += 1) {
     				each_blocks[i].m(svg, null);
     			}
 
-    			append_dev(main, t4);
+    			append_dev(main, t3);
     			append_dev(main, br);
-    			append_dev(main, t5);
+    			append_dev(main, t4);
     			append_dev(main, div1);
     			append_dev(div1, input);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
-    			if (dirty & /*path, dataset, colorScale, quadInOut, handleMousemove*/ 51) {
-    				each_value = /*dataset*/ ctx[0];
+    			if (dirty & /*path, drawThis, colorScale, quadInOut, handleMousemove*/ 51) {
+    				each_value = /*drawThis*/ ctx[0];
     				validate_each_argument(each_value);
     				let i;
 
@@ -4296,7 +4253,7 @@ var app = (function () {
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('App', slots, []);
-    	let dataset = [];
+    	let drawThis = [];
     	const sphere = { type: 'Sphere' };
     	var height = window.innerHeight * 0.95;
     	var width = window.innerWidth * 0.95;
@@ -4312,22 +4269,22 @@ var app = (function () {
     	const path = geoPath(projection);
 
     	//fetch the geographical data from geojson, process with d3
-    	json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson').then(data1 => {
+    	json('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson').then(geoData => {
     		//data has all the information of countries: names, id, geomatrical data, etc.
-    		//save all that into an array named "dataset"
-    		$$invalidate(0, dataset = data1.features);
+    		//save all that into an array named "drawThis"
+    		$$invalidate(0, drawThis = geoData.features);
 
     		//fetch energy data from a csv file, process with d3
-    		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
     		//https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv
-    		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then(data2 => {
+    		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
+    		csv('https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv').then(energyData => {
     			let yearLabel = document.getElementById('yearLabel');
     			let slider = document.getElementById('yearSelect');
     			let dropDown = document.getElementById('catSelect');
     			let years = [];
     			let dropDownSelect;
 
-    			data2.forEach(i => {
+    			energyData.forEach(i => {
     				if (i.iso_code == "AFG") {
     					//get the range of years from any single country
     					years.push(i.year);
@@ -4348,8 +4305,6 @@ var app = (function () {
     								x.text = "Fossil Consumption Per Capita";
     								dropDown.appendChild(x);
     							}
-
-    							dropDown.selectedIndex = 0;
     						}
     					}
     				}
@@ -4359,9 +4314,10 @@ var app = (function () {
     			slider.max = Math.max(...years);
 
     			slider.min = 2000;
-    			slider.value = 2000;
+    			slider.value = slider.min;
     			yearLabel.textContent = slider.value;
 
+    			//event listener for the dropdown 
     			dropDown.addEventListener('change', () => {
     				let currentSelect = dropDown.options[dropDown.selectedIndex].text;
 
@@ -4382,8 +4338,8 @@ var app = (function () {
     			slider.addEventListener('input', () => {
     				let currentSelect = slider.value;
 
-    				dataset.forEach(i => {
-    					data2.forEach(j => {
+    				drawThis.forEach(i => {
+    					energyData.forEach(j => {
     						if (i.id == j.iso_code && j.year == currentSelect) {
     							//j.propertyName determines what data is pulled from the csv file
     							//Using population data for now for the sake of simplicity 
@@ -4395,11 +4351,11 @@ var app = (function () {
 
     				//change the color scaling based on the year selected from the slider
     				//d3.extent compares using natural order instead of numeric order, so parseInt (above) is implemented
-    				const numExtent = extent(dataset, d => d.properties.data);
+    				const numExtent = extent(drawThis, d => d.properties.data);
 
     				$$invalidate(1, colorScale = linear().domain(numExtent).range(["white", "red"]));
     				yearLabel.textContent = slider.value;
-    			}); //console.log(data2)
+    			}); //console.log(numExtent)
     		});
     	});
 
@@ -4419,8 +4375,6 @@ var app = (function () {
     	$$self.$capture_state = () => ({
     		json,
     		csv,
-    		max,
-    		min,
     		geoPath,
     		geoNaturalEarth1,
     		scaleLinear: linear,
@@ -4428,7 +4382,7 @@ var app = (function () {
     		raise,
     		draw,
     		quadInOut,
-    		dataset,
+    		drawThis,
     		sphere,
     		height,
     		width,
@@ -4439,7 +4393,7 @@ var app = (function () {
     	});
 
     	$$self.$inject_state = $$props => {
-    		if ('dataset' in $$props) $$invalidate(0, dataset = $$props.dataset);
+    		if ('drawThis' in $$props) $$invalidate(0, drawThis = $$props.drawThis);
     		if ('height' in $$props) $$invalidate(2, height = $$props.height);
     		if ('width' in $$props) $$invalidate(3, width = $$props.width);
     		if ('colorScale' in $$props) $$invalidate(1, colorScale = $$props.colorScale);
@@ -4449,7 +4403,7 @@ var app = (function () {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [dataset, colorScale, height, width, path, handleMousemove];
+    	return [drawThis, colorScale, height, width, path, handleMousemove];
     }
 
     class App extends SvelteComponentDev {
