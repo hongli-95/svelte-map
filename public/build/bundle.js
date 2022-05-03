@@ -3983,7 +3983,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (130:3) {#each drawThis as eachCountry}
+    // (135:3) {#each drawThis as eachCountry}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
@@ -3999,7 +3999,7 @@ var app = (function () {
     			attr_dev(path_1, "class", "feature-path svelte-1qooiyj");
     			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*eachCountry*/ ctx[8]));
     			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*eachCountry*/ ctx[8].properties.data));
-    			add_location(path_1, file, 130, 4, 4589);
+    			add_location(path_1, file, 135, 4, 4503);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4039,7 +4039,7 @@ var app = (function () {
     					path_1,
     					draw,
     					{
-    						duration: 2000,
+    						duration: 1000,
     						delay: 0,
     						easing: quadInOut
     					},
@@ -4056,7 +4056,7 @@ var app = (function () {
     				path_1,
     				draw,
     				{
-    					duration: 2000,
+    					duration: 1000,
     					delay: 0,
     					easing: quadInOut
     				},
@@ -4078,7 +4078,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(130:3) {#each drawThis as eachCountry}",
+    		source: "(135:3) {#each drawThis as eachCountry}",
     		ctx
     	});
 
@@ -4136,31 +4136,31 @@ var app = (function () {
     			attr_dev(label, "id", "yearLabel");
     			attr_dev(label, "for", "");
     			attr_dev(label, "class", "svelte-1qooiyj");
-    			add_location(label, file, 122, 2, 4350);
+    			add_location(label, file, 127, 2, 4264);
     			option.__value = "";
     			option.value = option.__value;
     			option.disabled = true;
     			option.selected = true;
     			option.hidden = true;
-    			add_location(option, file, 125, 3, 4418);
+    			add_location(option, file, 130, 3, 4332);
     			attr_dev(select, "id", "catSelect");
     			attr_dev(select, "class", "svelte-1qooiyj");
-    			add_location(select, file, 124, 2, 4391);
+    			add_location(select, file, 129, 2, 4305);
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
     			attr_dev(svg, "class", "svelte-1qooiyj");
-    			add_location(svg, file, 128, 2, 4511);
+    			add_location(svg, file, 133, 2, 4425);
     			attr_dev(div0, "id", "mapCanvas");
     			attr_dev(div0, "class", "svelte-1qooiyj");
-    			add_location(div0, file, 121, 1, 4327);
-    			add_location(br, file, 141, 1, 4861);
+    			add_location(div0, file, 126, 1, 4241);
+    			add_location(br, file, 146, 1, 4775);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "id", "yearSelect");
     			attr_dev(input, "class", "svelte-1qooiyj");
-    			add_location(input, file, 145, 2, 4934);
+    			add_location(input, file, 150, 2, 4848);
     			attr_dev(div1, "id", "select");
-    			add_location(div1, file, 144, 1, 4914);
+    			add_location(div1, file, 149, 1, 4828);
     			attr_dev(main, "class", "svelte-1qooiyj");
-    			add_location(main, file, 119, 0, 4295);
+    			add_location(main, file, 124, 0, 4209);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4313,7 +4313,7 @@ var app = (function () {
     			//set the min and max for the slider
     			slider.max = Math.max(...years);
 
-    			slider.min = 2000;
+    			slider.min = 1900;
     			slider.value = slider.min;
     			yearLabel.textContent = slider.value;
 
@@ -4334,17 +4334,22 @@ var app = (function () {
     				}
     			});
 
-    			//add population data based on the year selected from the slider
+    			//add selected data based on the year selected from the slider
     			slider.addEventListener('input', () => {
     				let currentSelect = slider.value;
 
     				drawThis.forEach(i => {
+    					let yearArray = [];
+
     					energyData.forEach(j => {
-    						if (i.id == j.iso_code && j.year == currentSelect) {
-    							//j.propertyName determines what data is pulled from the csv file
-    							//Using population data for now for the sake of simplicity 
-    							//Will probably add all the data from the csv at the end, and use a slider to choose which data to display
-    							i.properties.data = parseInt(j[`${dropDownSelect}`]);
+    						if (i.id == j.iso_code) {
+    							yearArray.push(j.year);
+
+    							if (yearArray.includes(currentSelect)) {
+    								i.properties.data = parseInt(j[`${dropDownSelect}`]);
+    							} else {
+    								delete i.properties.data;
+    							}
     						}
     					});
     				});
@@ -4356,6 +4361,7 @@ var app = (function () {
     				$$invalidate(1, colorScale = linear().domain(numExtent).range(["white", "red"]));
     				yearLabel.textContent = slider.value;
     			}); //console.log(numExtent)
+    			//console.log(drawThis)
     		});
     	});
 

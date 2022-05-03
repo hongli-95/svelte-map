@@ -65,7 +65,7 @@
 
 			//set the min and max for the slider
 			slider.max = Math.max(...years);
-			slider.min = 2000;
+			slider.min = 1900;
 			slider.value = slider.min;
 			yearLabel.textContent = slider.value;
 
@@ -85,16 +85,20 @@
 				}
 			})
 			
-			//add population data based on the year selected from the slider
+			//add selected data based on the year selected from the slider
 			slider.addEventListener('input', () => {
 				let currentSelect = slider.value;
 				drawThis.forEach((i) => {
+					let yearArray = []
 					energyData.forEach((j) => {
-						if (i.id == j.iso_code && j.year == currentSelect) {
-							//j.propertyName determines what data is pulled from the csv file
-							//Using population data for now for the sake of simplicity 
-							//Will probably add all the data from the csv at the end, and use a slider to choose which data to display
-							i.properties.data = parseInt(j[`${dropDownSelect}`]);
+						if (i.id == j.iso_code) {
+							yearArray.push(j.year);
+							if (yearArray.includes(currentSelect)) {
+								i.properties.data = parseInt(j[`${dropDownSelect}`]);
+							}
+							else {
+								delete i.properties.data
+							}
 						}
 					})
 				})
@@ -104,6 +108,7 @@
 				colorScale = scaleLinear().domain(numExtent).range(["white", "red"]);
 				yearLabel.textContent = slider.value
 				//console.log(numExtent)
+				//console.log(drawThis)
 			})
 		})
 	})
@@ -130,7 +135,7 @@
 			{#each drawThis as eachCountry}
 				<path
 					class="feature-path"
-					transition:draw={{ duration: 2000, delay: 0, easing: quadInOut }}
+					transition:draw={{ duration: 1000, delay: 0, easing: quadInOut }}
 					d = {path(eachCountry)}
 					on:mousemove={handleMousemove(eachCountry)}
 					fill = {colorScale(eachCountry.properties.data)}
