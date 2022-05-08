@@ -1,9 +1,9 @@
 <script>
 	import { json, csv} from 'd3';
-	import { geoPath, geoNaturalEarth1, scaleLinear, extent } from 'd3';
+	import { geoPath, geoNaturalEarth1, scaleLinear, extent} from 'd3';
 	import { raise } from 'layercake';
 	import { draw } from 'svelte/transition';
-	import { quadInOut } from 'Svelte/easing';
+	import { quadInOut } from 'svelte/easing';
 
 	let drawThis = [];
 
@@ -29,7 +29,7 @@
 		//fetch energy data from a csv file, process with d3
 		//https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv
 		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
-		csv('https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv').then((energyData) => {
+		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then((energyData) => {
 
 			let yearLabel = document.getElementById('yearLabel');
 			let slider = document.getElementById('yearSelect');
@@ -58,6 +58,21 @@
 								x.text = "Fossil Consumption Per Capita"
 								dropDown.appendChild(x)
 							}
+							// else if (propertyName == "coal_production") {
+							// 	let x = document.createElement("option")
+							// 	x.text = "Testing"
+							// 	dropDown.appendChild(x)
+							// }
+							// else if (propertyName == "energy_per_capita") {
+							// 	let x = document.createElement("option")
+							// 	x.text = "Energy Per Capita"
+							// 	dropDown.appendChild(x)
+							// }
+							// else if (propertyName == "population") {
+							// 	let x = document.createElement("option")
+							// 	x.text = "Population"
+							// 	dropDown.appendChild(x)
+							// }
 						}
 					}
 				} 
@@ -82,6 +97,15 @@
 					case "Electricity Per Capita":
 						dropDownSelect = "per_capita_electricity"
 						break;
+					// case "Testing":
+					// 	dropDownSelect = "coal_production"
+					// 	break;
+					// case "Energy Per Capita":
+					// 	dropDownSelect = "energy_per_capita"
+					// 	break;
+					// case "Population":
+					// 	dropDownSelect = "population"
+					// 	break;
 				}
 			})
 			
@@ -94,7 +118,7 @@
 						if (i.id == j.iso_code) {
 							yearArray.push(j.year);
 							if (yearArray.includes(currentSelect)) {
-								i.properties.data = parseInt(j[`${dropDownSelect}`]);
+								i.properties.data = parseFloat(j[`${dropDownSelect}`]);
 							}
 							else {
 								delete i.properties.data
@@ -105,10 +129,11 @@
 				//change the color scaling based on the year selected from the slider
 				//d3.extent compares using natural order instead of numeric order, so parseInt (above) is implemented
 				const numExtent = extent(drawThis, d => d.properties.data);
-				colorScale = scaleLinear().domain(numExtent).range(["white", "red"]);
+				colorScale = scaleLinear().domain(numExtent).range(["hsl(155, 100%, 60%)", "hsl(0, 50%, 60%)"]);
 				yearLabel.textContent = slider.value
-				//console.log(numExtent)
-				//console.log(drawThis)
+				// console.log(numExtent)
+				// console.log(energyData)
+				// console.log(drawThis)
 			})
 		})
 	})
@@ -147,9 +172,14 @@
 	<br>
 
 	<!-- Using a slider to select which year -->
-	<div id="select">
-		<input type="range" id="yearSelect">
+	<div id="bottom">
+		<div id="select">
+			<input type="range" id="yearSelect">
+		</div>
+	
+		<div id="author"><p>Personal Project by Hong Li</p></div>
 	</div>
+	
 	
 </main>
 
@@ -169,15 +199,25 @@
 		margin: auto;
 	}
 
+	path {
+		transition: fill .5s ease;
+	}
+
 	svg {
 		width: 90%;
 		display: block;
 		margin: auto;
 	}
 
+	#select {
+		width: 70%;
+		display: block;
+		margin: auto;
+	}
+
 	/* styling for the silder */
 	#yearSelect {
-		width: 80%;
+		width: 100%;
 		display: block;
 		margin: auto;
 		-webkit-appearance: none;  /* Override default CSS styles */
@@ -194,6 +234,14 @@
 		position: absolute;
 		font-size: xx-large;
 		font-family: Verdana, sans-serif;
+	}
+
+	#author {
+		width: auto;
+		position: absolute;
+		bottom: 2px;
+		right: 10px;
+		font-size: x-small;
 	}
 
 	#catSelect {
