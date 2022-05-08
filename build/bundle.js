@@ -3983,7 +3983,7 @@ var app = (function () {
     	return child_ctx;
     }
 
-    // (135:3) {#each drawThis as eachCountry}
+    // (160:3) {#each drawThis as eachCountry}
     function create_each_block(ctx) {
     	let path_1;
     	let path_1_d_value;
@@ -3996,10 +3996,10 @@ var app = (function () {
     	const block = {
     		c: function create() {
     			path_1 = svg_element("path");
-    			attr_dev(path_1, "class", "feature-path svelte-1qooiyj");
+    			attr_dev(path_1, "class", "feature-path svelte-1jun2l7");
     			attr_dev(path_1, "d", path_1_d_value = /*path*/ ctx[4](/*eachCountry*/ ctx[8]));
     			attr_dev(path_1, "fill", path_1_fill_value = /*colorScale*/ ctx[1](/*eachCountry*/ ctx[8].properties.data));
-    			add_location(path_1, file, 135, 4, 4503);
+    			add_location(path_1, file, 160, 4, 5379);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, path_1, anchor);
@@ -4078,7 +4078,7 @@ var app = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(135:3) {#each drawThis as eachCountry}",
+    		source: "(160:3) {#each drawThis as eachCountry}",
     		ctx
     	});
 
@@ -4097,8 +4097,12 @@ var app = (function () {
     	let t3;
     	let br;
     	let t4;
+    	let div3;
     	let div1;
     	let input;
+    	let t5;
+    	let div2;
+    	let p;
     	let current;
     	let each_value = /*drawThis*/ ctx[0];
     	validate_each_argument(each_value);
@@ -4131,36 +4135,48 @@ var app = (function () {
     			t3 = space();
     			br = element("br");
     			t4 = space();
+    			div3 = element("div");
     			div1 = element("div");
     			input = element("input");
+    			t5 = space();
+    			div2 = element("div");
+    			p = element("p");
+    			p.textContent = "Personal Project by Hong Li";
     			attr_dev(label, "id", "yearLabel");
     			attr_dev(label, "for", "");
-    			attr_dev(label, "class", "svelte-1qooiyj");
-    			add_location(label, file, 127, 2, 4264);
+    			attr_dev(label, "class", "svelte-1jun2l7");
+    			add_location(label, file, 152, 2, 5140);
     			option.__value = "";
     			option.value = option.__value;
     			option.disabled = true;
     			option.selected = true;
     			option.hidden = true;
-    			add_location(option, file, 130, 3, 4332);
+    			add_location(option, file, 155, 3, 5208);
     			attr_dev(select, "id", "catSelect");
-    			attr_dev(select, "class", "svelte-1qooiyj");
-    			add_location(select, file, 129, 2, 4305);
+    			attr_dev(select, "class", "svelte-1jun2l7");
+    			add_location(select, file, 154, 2, 5181);
     			attr_dev(svg, "viewBox", "0 0 " + /*width*/ ctx[3] + " " + /*height*/ ctx[2]);
-    			attr_dev(svg, "class", "svelte-1qooiyj");
-    			add_location(svg, file, 133, 2, 4425);
+    			attr_dev(svg, "class", "svelte-1jun2l7");
+    			add_location(svg, file, 158, 2, 5301);
     			attr_dev(div0, "id", "mapCanvas");
-    			attr_dev(div0, "class", "svelte-1qooiyj");
-    			add_location(div0, file, 126, 1, 4241);
-    			add_location(br, file, 146, 1, 4775);
+    			attr_dev(div0, "class", "svelte-1jun2l7");
+    			add_location(div0, file, 151, 1, 5117);
+    			add_location(br, file, 171, 1, 5651);
     			attr_dev(input, "type", "range");
     			attr_dev(input, "id", "yearSelect");
-    			attr_dev(input, "class", "svelte-1qooiyj");
-    			add_location(input, file, 150, 2, 4848);
+    			attr_dev(input, "class", "svelte-1jun2l7");
+    			add_location(input, file, 176, 3, 5745);
     			attr_dev(div1, "id", "select");
-    			add_location(div1, file, 149, 1, 4828);
-    			attr_dev(main, "class", "svelte-1qooiyj");
-    			add_location(main, file, 124, 0, 4209);
+    			attr_dev(div1, "class", "svelte-1jun2l7");
+    			add_location(div1, file, 175, 2, 5724);
+    			add_location(p, file, 179, 19, 5812);
+    			attr_dev(div2, "id", "author");
+    			attr_dev(div2, "class", "svelte-1jun2l7");
+    			add_location(div2, file, 179, 2, 5795);
+    			attr_dev(div3, "id", "bottom");
+    			add_location(div3, file, 174, 1, 5704);
+    			attr_dev(main, "class", "svelte-1jun2l7");
+    			add_location(main, file, 149, 0, 5085);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -4182,8 +4198,12 @@ var app = (function () {
     			append_dev(main, t3);
     			append_dev(main, br);
     			append_dev(main, t4);
-    			append_dev(main, div1);
+    			append_dev(main, div3);
+    			append_dev(div3, div1);
     			append_dev(div1, input);
+    			append_dev(div3, t5);
+    			append_dev(div3, div2);
+    			append_dev(div2, p);
     			current = true;
     		},
     		p: function update(ctx, [dirty]) {
@@ -4277,7 +4297,7 @@ var app = (function () {
     		//fetch energy data from a csv file, process with d3
     		//https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv
     		//https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv
-    		csv('https://critviz.s3.amazonaws.com/uploads/user_file/file/191492/owid-energy-data_cleaned2.csv').then(energyData => {
+    		csv('https://nyc3.digitaloceanspaces.com/owid-public/data/energy/owid-energy-data.csv').then(energyData => {
     			let yearLabel = document.getElementById('yearLabel');
     			let slider = document.getElementById('yearSelect');
     			let dropDown = document.getElementById('catSelect');
@@ -4305,11 +4325,22 @@ var app = (function () {
     								x.text = "Fossil Consumption Per Capita";
     								dropDown.appendChild(x);
     							}
-    						}
-    					}
-    				}
-    			});
+    						} // else if (propertyName == "coal_production") {
+    						// 	let x = document.createElement("option")
+    					} // 	x.text = "Testing"
+    					// 	dropDown.appendChild(x)
+    				} // }
+    				// else if (propertyName == "energy_per_capita") {
+    			}); // 	let x = document.createElement("option")
+    			// 	x.text = "Energy Per Capita"
+    			// 	dropDown.appendChild(x)
+    			// }
 
+    			// else if (propertyName == "population") {
+    			// 	let x = document.createElement("option")
+    			// 	x.text = "Population"
+    			// 	dropDown.appendChild(x)
+    			// }
     			//set the min and max for the slider
     			slider.max = Math.max(...years);
 
@@ -4331,9 +4362,16 @@ var app = (function () {
     					case "Electricity Per Capita":
     						dropDownSelect = "per_capita_electricity";
     						break;
-    				}
-    			});
+    				} // case "Testing":
+    			}); // 	dropDownSelect = "coal_production"
+    			// 	break;
+    			// case "Energy Per Capita":
+    			// 	dropDownSelect = "energy_per_capita"
 
+    			// 	break;
+    			// case "Population":
+    			// 	dropDownSelect = "population"
+    			// 	break;
     			//add selected data based on the year selected from the slider
     			slider.addEventListener('input', () => {
     				let currentSelect = slider.value;
@@ -4346,7 +4384,7 @@ var app = (function () {
     							yearArray.push(j.year);
 
     							if (yearArray.includes(currentSelect)) {
-    								i.properties.data = parseInt(j[`${dropDownSelect}`]);
+    								i.properties.data = parseFloat(j[`${dropDownSelect}`]);
     							} else {
     								delete i.properties.data;
     							}
@@ -4358,10 +4396,11 @@ var app = (function () {
     				//d3.extent compares using natural order instead of numeric order, so parseInt (above) is implemented
     				const numExtent = extent(drawThis, d => d.properties.data);
 
-    				$$invalidate(1, colorScale = linear().domain(numExtent).range(["white", "red"]));
+    				$$invalidate(1, colorScale = linear().domain(numExtent).range(["hsl(155, 100%, 60%)", "hsl(0, 50%, 60%)"]));
     				yearLabel.textContent = slider.value;
-    			}); //console.log(numExtent)
-    			//console.log(drawThis)
+    			}); // console.log(numExtent)
+    			// console.log(energyData)
+    			// console.log(drawThis)
     		});
     	});
 
